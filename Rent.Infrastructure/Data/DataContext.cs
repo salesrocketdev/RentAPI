@@ -18,6 +18,7 @@ namespace Rent.Infrastructure.Data
             }
         }
         public DbSet<Car> Cars => Set<Car>();
+        public DbSet<Login> Logins => Set<Login>();
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<Document> Documents => Set<Document>();
         public DbSet<Rental> Rentals => Set<Rental>();

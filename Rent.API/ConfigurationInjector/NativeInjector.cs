@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Rent.Domain.Interfaces;
+﻿using Rent.Domain.Interfaces;
 using Rent.Domain.Services;
 using Rent.Infrastructure.Repositories;
 
@@ -15,10 +13,13 @@ namespace Rent.API.ConfigurationInjector
             //Services
             services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICustomerService, CustomerService>();
+            services.AddTransient<ILoginService, LoginService>();
+            services.AddTransient<ITokenService, TokenService>();
 
             //Repositories
             services.AddScoped<ICarRepository, CarRepository>();
-            services.AddScoped<ICustomerRepository, CustomerRepository>();        
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ILoginRepository, LoginRepository>();
         }
     }
 }
