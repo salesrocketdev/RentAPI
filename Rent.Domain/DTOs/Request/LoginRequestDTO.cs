@@ -1,4 +1,4 @@
-﻿namespace Rent.API.DTOs
+﻿namespace Rent.Domain.DTOs.Request
 {
     public class LoginRequestDTO
     {

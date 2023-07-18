@@ -2,11 +2,13 @@
 using Rent.Domain.Interfaces;
 using Rent.Domain.Entities;
 using AutoMapper;
-using Rent.API.DTOs;
 using Rent.Core.Models;
+using Rent.Domain.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Rent.API.Controllers
 {
+    [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class CarsController : ControllerBase

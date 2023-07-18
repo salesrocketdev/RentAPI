@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Rent.API.DTOs
+namespace Rent.Domain.DTOs
 {
   public class CustomerDTO
   {

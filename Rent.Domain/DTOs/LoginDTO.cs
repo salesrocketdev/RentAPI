@@ -1,6 +1,6 @@
 ﻿using Rent.Domain.Entities;
 
-namespace Rent.API.DTOs
+namespace Rent.Domain.DTOs
 {
     public class LoginDTO
     {

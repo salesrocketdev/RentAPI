@@ -1,4 +1,4 @@
-﻿namespace Rent.API.DTOs.Response
+﻿namespace Rent.Domain.DTOs.Response
 {
     public class TokenResponse
     {

@@ -2,12 +2,14 @@
 using Rent.Domain.Interfaces;
 using Rent.Domain.Entities;
 using AutoMapper;
-using Rent.API.DTOs;
 using Rent.Core.Models;
+using Rent.Domain.DTOs;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {
     [Route("api/v1/[controller]")]
+    [SwaggerTag("Clientes")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
@@ -20,7 +22,8 @@ namespace Rent.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetAllCustomers")]
+        [SwaggerOperation(Summary = "Retorna todos os clientes cadastrados no sistema.", Description = "Este endpoint retorna uma lista de clientes cadastrados no sistema.")]
         public async Task<ActionResult<List<CustomerDTO>>> GetAllCustomers(int pageNumber = 1, int pageSize = 10)
         {
             try
@@ -51,6 +54,9 @@ namespace Rent.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Obter cliente por ID.", Description = "Retorna um cliente específico com base no seu ID.")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<CustomerDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse<CustomerDTO>))]
         public async Task<ActionResult<CustomerDTO>> GetCustomerById(int id)
         {
             try

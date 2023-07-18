@@ -1,7 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Rent.API.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Domain.DTOs.Request;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces;
 
@@ -12,12 +11,10 @@ namespace Rent.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ILoginService _loginService;
-        private readonly IMapper _mapper;
 
-        public AuthController(ILoginService loginService, IMapper mapper)
+        public AuthController(ILoginService loginService)
         {
             _loginService = loginService;
-            _mapper = mapper;
         }
 
         [HttpPost]
@@ -25,14 +22,10 @@ namespace Rent.API.Controllers
         {
             try
             {
-                var token = await _loginService.Authenticate(loginRequestDTO.Email, loginRequestDTO.Password);
+                if (loginRequestDTO.Email == null || loginRequestDTO.Password == null)
+                    throw new Exception("Por favor informe um email e senha");
 
-                //ApiResponse<TokenResponse> response = new ApiResponse<TokenResponse>
-                //{
-                //    Code = 1,
-                //    Message = "Success.",
-                //    Data = token
-                //};
+                var token = await _loginService.Authenticate(loginRequestDTO.Email, loginRequestDTO.Password);
 
                 return Ok(token);
             }

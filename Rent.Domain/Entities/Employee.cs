@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Rent.Domain.Entities
 {
-    public class Customer : BaseModel
+    public class Employee : BaseModel
     {
         [Required(ErrorMessage = "O nome é obrigatório.")]
         public string? Name { get; set; }
@@ -24,6 +24,5 @@ namespace Rent.Domain.Entities
         public int LoginId { get; set; }
         public Login? Login { get; set; }
         public ICollection<Role>? Roles { get; set; }
-        public Document? Document { get; set; }
     }
 }

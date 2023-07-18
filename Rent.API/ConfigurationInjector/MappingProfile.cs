@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Rent.API.DTOs;
+using Rent.Domain.DTOs;
 using Rent.Domain.Entities;
 
 namespace Rent.API.ConfigurationInjector
