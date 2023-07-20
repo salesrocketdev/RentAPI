@@ -11,15 +11,17 @@ namespace Rent.API.ConfigurationInjector
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //Services
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICustomerService, CustomerService>();
-            services.AddTransient<ILoginService, LoginService>();
-            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<IEmployeeService, EmployeeService>();
 
             //Repositories
+            services.AddScoped<ILoginRepository, LoginRepository>();
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
-            services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         }
     }
 }
