@@ -2,12 +2,16 @@
 using Rent.Domain.Interfaces;
 using Rent.Domain.Entities;
 using AutoMapper;
-using Rent.API.DTOs;
 using Rent.Core.Models;
+using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
+using Rent.API.DTOs;
 
 namespace Rent.API.Controllers
 {
+    [Authorize]
     [Route("api/v1/[controller]")]
+    [SwaggerTag("Clientes")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
@@ -21,11 +25,21 @@ namespace Rent.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CustomerDTO>>> GetAllCustomers(int pageNumber = 1, int pageSize = 10)
+        [SwaggerOperation(
+            Summary = "Retorna todos os clientes cadastrados no sistema.",
+            Description = "Este endpoint retorna uma lista de clientes cadastrados no sistema."
+        )]
+        public async Task<ActionResult<List<CustomerDTO>>> GetAllCustomers(
+            int pageNumber = 1,
+            int pageSize = 10
+        )
         {
             try
             {
-               var (customers, pagination) = await _customerService.GetAllCustomers(pageNumber, pageSize);
+                var (customers, pagination) = await _customerService.GetAllCustomers(
+                    pageNumber,
+                    pageSize
+                );
                 List<CustomerDTO> customerDTOs = _mapper.Map<List<CustomerDTO>>(customers);
 
                 ApiResponse<List<CustomerDTO>> response = new ApiResponse<List<CustomerDTO>>
@@ -51,6 +65,10 @@ namespace Rent.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(
+            Summary = "Obter cliente por ID.",
+            Description = "Retorna um cliente específico com base no seu ID."
+        )]
         public async Task<ActionResult<CustomerDTO>> GetCustomerById(int id)
         {
             try
@@ -80,6 +98,10 @@ namespace Rent.API.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation(
+            Summary = "Criar um novo cliente.",
+            Description = "Cria um novo cliente."
+        )]
         public async Task<ActionResult<CustomerDTO>> CreateCustomer(CustomerDTO customerRequest)
         {
             try
@@ -115,9 +137,12 @@ namespace Rent.API.Controllers
         }
 
         [HttpPut]
+        [SwaggerOperation(
+            Summary = "Atualiza um cliente existente.",
+            Description = "Atualiza um cliente existente."
+        )]
         public async Task<ActionResult<CustomerDTO>> UpdateCustomer(CustomerDTO customerRequest)
         {
-
             try
             {
                 // Mapear a CarDTO para a entidade Car
@@ -151,6 +176,10 @@ namespace Rent.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [SwaggerOperation(
+            Summary = "Remover cliente por ID.",
+            Description = "Remove um cliente específico com base no seu ID."
+        )]
         public async Task<ActionResult<CustomerDTO>> DeleteCustomer(int id)
         {
             try
