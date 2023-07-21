@@ -3,8 +3,8 @@ using Rent.Domain.Interfaces;
 using Rent.Domain.Entities;
 using AutoMapper;
 using Rent.Core.Models;
-using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
 using Rent.API.DTOs;
 
 namespace Rent.API.Controllers
