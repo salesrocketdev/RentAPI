@@ -1,4 +1,4 @@
-﻿namespace Rent.API.DTOs
+﻿namespace Rent.Domain.DTO.Response
 {
   public class CarDTO
   {

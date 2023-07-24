@@ -11,39 +11,39 @@ namespace Rent.API.Controllers
 {
     [Authorize]
     [Route("api/v1/[controller]")]
-    [SwaggerTag("Carros")]
+    [SwaggerTag("Administradores")]
     [ApiController]
-    public class CarsController : ControllerBase
+    public class OwnersController : ControllerBase
     {
-        private readonly ICarService _carService;
+        private readonly IOwnerService _ownerService;
         private readonly IMapper _mapper;
 
-        public CarsController(ICarService carService, IMapper mapper)
+        public OwnersController(IOwnerService ownerService, IMapper mapper)
         {
-            _carService = carService;
+            _ownerService = ownerService;
             _mapper = mapper;
         }
 
         [HttpGet]
         [SwaggerOperation(
-            Summary = "Retorna todos os carros cadastrados no sistema.",
-            Description = "Este endpoint retorna uma lista de carros cadastrados no sistema."
+            Summary = "Retorna todos os admnistradores cadastrados no sistema.",
+            Description = "Este endpoint retorna uma lista de admnistradores cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<CarDTO>>> GetAllCars(
+        public async Task<ActionResult<List<OwnerDTO>>> GetAllOwners(
             int pageNumber = 1,
             int pageSize = 10
         )
         {
             try
             {
-                var (cars, pagination) = await _carService.GetAllCars(pageNumber, pageSize);
-                List<CarDTO> carsDTOs = _mapper.Map<List<CarDTO>>(cars);
+                var (owners, pagination) = await _ownerService.GetAllOwners(pageNumber, pageSize);
+                List<OwnerDTO> ownerDTOs = _mapper.Map<List<OwnerDTO>>(owners);
 
-                ApiResponse<List<CarDTO>> response = new ApiResponse<List<CarDTO>>
+                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = carsDTOs,
+                    Data = ownerDTOs,
                     Pagination = pagination
                 };
 
@@ -51,7 +51,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<List<CarDTO>> response = new ApiResponse<List<CarDTO>>
+                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -63,28 +63,28 @@ namespace Rent.API.Controllers
 
         [HttpGet("{id}")]
         [SwaggerOperation(
-            Summary = "Obter carro por ID.",
-            Description = "Retorna um carro específico com base no seu ID."
+            Summary = "Obter administrador por ID.",
+            Description = "Retorna um administrador específico com base no seu ID."
         )]
-        public async Task<ActionResult<CarDTO>> GetCarById(int id)
+        public async Task<ActionResult<OwnerDTO>> GetOwnerById(int id)
         {
             try
             {
-                Car car = await _carService.GetCarById(id);
-                CarDTO carDTO = _mapper.Map<CarDTO>(car);
+                Owner owner = await _ownerService.GetOwnerById(id);
+                OwnerDTO ownerDTO = _mapper.Map<OwnerDTO>(owner);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = carDTO
+                    Data = ownerDTO
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 0,
                     Message = ex.Message
@@ -95,32 +95,35 @@ namespace Rent.API.Controllers
         }
 
         [HttpPost]
-        [SwaggerOperation(Summary = "Criar um novo carro.", Description = "Cria um novo carro.")]
-        public async Task<ActionResult<CarDTO>> CreateCar(CarDTO carsRequest)
+        [SwaggerOperation(
+            Summary = "Criar um novo administrador.",
+            Description = "Cria um novo administrador."
+        )]
+        public async Task<ActionResult<OwnerDTO>> CreateOwner(OwnerDTO ownerRequest)
         {
             try
             {
                 // Mapear a CarDTO para a entidade Car
-                Car cars = _mapper.Map<Car>(carsRequest);
+                Owner owner = _mapper.Map<Owner>(ownerRequest);
 
                 // Adicionar o carro usando o serviço
-                Car addedCars = await _carService.AddCar(cars);
+                Owner addedOwner = await _ownerService.AddOwner(owner);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                CarDTO addedCarDTO = _mapper.Map<CarDTO>(addedCars);
+                OwnerDTO addedOwnerDTO = _mapper.Map<OwnerDTO>(addedOwner);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = addedCarDTO
+                    Data = addedOwnerDTO
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -132,34 +135,34 @@ namespace Rent.API.Controllers
 
         [HttpPut]
         [SwaggerOperation(
-            Summary = "Atualiza um carro existente.",
-            Description = "Atualiza um carro existente."
+            Summary = "Atualiza um administrador existente.",
+            Description = "Atualiza um administrador existente."
         )]
-        public async Task<ActionResult<CarDTO>> UpdateCar(CarDTO carsRequest)
+        public async Task<ActionResult<OwnerDTO>> UpdateOwner(OwnerDTO ownerRequest)
         {
             try
             {
                 // Mapear a CarDTO para a entidade Car
-                Car cars = _mapper.Map<Car>(carsRequest);
+                Owner owner = _mapper.Map<Owner>(ownerRequest);
 
                 // Adicionar o carro usando o serviço
-                Car updatedCars = await _carService.UpdateCar(cars);
+                Owner updatedOwner = await _ownerService.UpdateOwner(owner);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                CarDTO updatedCarDTO = _mapper.Map<CarDTO>(updatedCars);
+                OwnerDTO updatedOwnerDTO = _mapper.Map<OwnerDTO>(updatedOwner);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = updatedCarDTO
+                    Data = updatedOwnerDTO
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -171,16 +174,16 @@ namespace Rent.API.Controllers
 
         [HttpDelete("{id}")]
         [SwaggerOperation(
-            Summary = "Remover carro por ID.",
-            Description = "Remove um carro específico com base no seu ID."
+            Summary = "Remover administrador por ID.",
+            Description = "Remove um administrador específico com base no seu ID."
         )]
-        public async Task<ActionResult<CarDTO>> DeleteCar(int id)
+        public async Task<ActionResult<OwnerDTO>> DeleteOwner(int id)
         {
             try
             {
-                await _carService.DeleteCar(id);
+                await _ownerService.DeleteOwner(id);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -190,7 +193,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
                 {
                     Code = 0,
                     Message = ex.Message

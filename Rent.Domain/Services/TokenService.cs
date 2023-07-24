@@ -11,25 +11,34 @@ namespace Rent.Domain.Services
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
+
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
-        public string GenerateToken(LoginRequest loginRequest)
+
+        public string GenerateToken(Login login)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            byte[] key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Secret").Value);
+            byte[] key = Encoding.ASCII.GetBytes(
+                _configuration.GetSection("AppSettings:Secret").Value
+            );
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Email, loginRequest.Email),
-                }),
-
-                Expires = DateTime.UtcNow.AddHours(8),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-
+                Subject = new ClaimsIdentity(
+                    new[]
+                    {
+                        new Claim(ClaimTypes.Sid, login.ParentId.ToString()),
+                        new Claim(ClaimTypes.Email, login.Email),
+                        new Claim(ClaimTypes.Role, login.UserType.ToString()),
+                    }
+                ),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                )
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
 

@@ -1,48 +1,45 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Rent.API.DTOs;
 using Rent.Core.Models;
-using Rent.Domain.Entities;
+using Rent.Domain.DTO.Request;
 using Rent.Domain.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {
     [Route("api/v1/[controller]")]
+    [SwaggerTag("Autenticação")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ILoginService _loginService;
+        private readonly IAuthenticationService _authenticationService;
         private readonly IMapper _mapper;
 
-        public AuthController(ILoginService loginService, IMapper mapper)
+        public AuthController(IAuthenticationService authenticationService, IMapper mapper)
         {
-            _loginService = loginService;
+            _authenticationService = authenticationService;
             _mapper = mapper;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<TokenResponse>> Login(LoginRequestDTO loginRequestDTO)
+        [HttpPost(Name = "Authenticate")]
+        [SwaggerOperation(
+            Summary = "Realizar autenticação.",
+            Description = "Realiza a autenticação com um usuário já registrado e retorna um token JWT."
+        )]
+        public async Task<ActionResult> Authenticate(string email, string password)
         {
             try
             {
-                var token = await _loginService.Authenticate(loginRequestDTO.Email, loginRequestDTO.Password);
+                if (email == null || password == null)
+                    throw new Exception("Por favor informe um email e senha");
 
-                //ApiResponse<TokenResponse> response = new ApiResponse<TokenResponse>
-                //{
-                //    Code = 1,
-                //    Message = "Success.",
-                //    Data = token
-                //};
+                var token = await _authenticationService.Authenticate(email, password);
 
                 return Ok(token);
             }
             catch (Exception ex)
             {
-                ApiResponse<TokenResponse> response = new ApiResponse<TokenResponse>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<LoginRequest> response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }

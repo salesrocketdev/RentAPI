@@ -13,12 +13,15 @@ namespace Rent.API.ConfigurationInjector
             //Services
             services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICustomerService, CustomerService>();
+            services.AddTransient<IOwnerService, OwnerService>();
             services.AddTransient<ILoginService, LoginService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ITokenService, TokenService>();
 
             //Repositories
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IOwnerRepository, OwnerRepository>();
             services.AddScoped<ILoginRepository, LoginRepository>();
         }
     }

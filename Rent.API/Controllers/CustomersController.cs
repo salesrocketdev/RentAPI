@@ -5,7 +5,7 @@ using AutoMapper;
 using Rent.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Annotations;
-using Rent.API.DTOs;
+using Rent.Domain.DTO.Response;
 
 namespace Rent.API.Controllers
 {
