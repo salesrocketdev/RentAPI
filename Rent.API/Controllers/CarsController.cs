@@ -6,6 +6,7 @@ using Rent.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Annotations;
 using Rent.Domain.DTO.Response;
+using Rent.Domain.Interfaces.Services;
 
 namespace Rent.API.Controllers
 {

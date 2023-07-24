@@ -1,6 +1,6 @@
 using Rent.Domain.DTO.Response;
 
-namespace Rent.Domain.Interfaces
+namespace Rent.Domain.Interfaces.Services
 {
     public interface IAuthenticationService
     {

@@ -1,7 +1,7 @@
 ﻿using Rent.Core.Models;
 using Rent.Domain.Entities;
 
-namespace Rent.Domain.Interfaces
+namespace Rent.Domain.Interfaces.Repositories
 {
     public interface IOwnerRepository
     {

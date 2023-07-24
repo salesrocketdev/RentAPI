@@ -5,6 +5,7 @@ using Rent.Core.Models;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces;
+using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers

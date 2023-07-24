@@ -12,6 +12,7 @@ namespace Rent.API.ConfigurationInjector
             #region DTO to Model
             CreateMap<CarDTO, Car>();
             CreateMap<CustomerDTO, Customer>();
+            CreateMap<EmployeeDTO, Employee>();
             CreateMap<OwnerDTO, Owner>();
             CreateMap<DocumentDTO, Document>();
             CreateMap<LoginRequest, Login>();
@@ -22,6 +23,7 @@ namespace Rent.API.ConfigurationInjector
             #region Model to DTO
             CreateMap<Car, CarDTO>();
             CreateMap<Customer, CustomerDTO>();
+            CreateMap<Employee, EmployeeDTO>();
             CreateMap<Owner, OwnerDTO>();
             CreateMap<Document, DocumentDTO>();
             CreateMap<Login, LoginRequest>();

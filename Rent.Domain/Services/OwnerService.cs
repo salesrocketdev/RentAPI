@@ -1,4 +1,5 @@
-﻿using Rent.Domain.Interfaces;
+﻿using Rent.Domain.Interfaces.Repositories;
+using Rent.Domain.Interfaces.Services;
 using Rent.Domain.Entities;
 using Rent.Core.Models;
 

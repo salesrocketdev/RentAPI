@@ -1,9 +1,9 @@
 ﻿using Rent.Core.Models;
 using Rent.Domain.Entities;
 
-namespace Rent.Domain.Interfaces
+namespace Rent.Domain.Interfaces.Repositories
 {
-    public interface ICustomerService
+    public interface ICustomerRepository
     {
         Task<(List<Customer>, PaginationMeta)> GetAllCustomers(int pageNumber, int pageSize);
         Task<Customer> GetCustomerById(int id);

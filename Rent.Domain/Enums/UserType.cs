@@ -2,8 +2,8 @@ namespace Rent.Domain.Enums
 {
     public enum UserType
     {
-        Customer,
-        Employee,
-        Owner,
+        Owner = 1,
+        Employee = 2,
+        Customer = 3,
     }
 }

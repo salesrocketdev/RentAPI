@@ -1,9 +1,9 @@
 ﻿using Rent.Core.Models;
 using Rent.Domain.Entities;
 
-namespace Rent.Domain.Interfaces
+namespace Rent.Domain.Interfaces.Repositories
 {
-    public interface ICarService
+    public interface ICarRepository
     {
         Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize);
         Task<Car> GetCarById(int id);

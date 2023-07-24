@@ -1,7 +1,8 @@
 using AutoMapper;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
-using Rent.Domain.Interfaces;
+using Rent.Domain.Interfaces.Repositories;
+using Rent.Domain.Interfaces.Services;
 
 namespace Rent.Domain.Services
 {
