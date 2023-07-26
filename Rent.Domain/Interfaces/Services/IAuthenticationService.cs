@@ -5,5 +5,6 @@ namespace Rent.Domain.Interfaces.Services
     public interface IAuthenticationService
     {
         Task<TokenResponse> Authenticate(string email, string password);
+        UserMeta GetUserMeta(string token);
     }
 }

@@ -21,7 +21,7 @@ namespace Rent.Infrastructure.Repositories
                 .Where(
                     x =>
                         x.Email == email
-                        && x.Password == password
+                        // && x.Password == password
                         && x.IsActive == true
                         && x.IsDeleted == false
                 )
@@ -59,6 +59,24 @@ namespace Rent.Infrastructure.Repositories
             return login ?? throw new Exception("Login not found");
         }
 
+        public async Task<Login> GetLoginByEmail(string? email)
+        {
+            Login? login = await _context.Logins
+                .Where(x => x.Email == email && x.IsActive == true && x.IsDeleted == false)
+                .FirstOrDefaultAsync();
+
+            return login ?? throw new Exception("Login not found");
+        }
+
+        public async Task<Login> GetLoginByParentId(int parentId)
+        {
+            Login? login = await _context.Logins
+                .Where(x => x.ParentId == parentId && x.IsActive == true && x.IsDeleted == false)
+                .FirstOrDefaultAsync();
+
+            return login ?? throw new Exception("Login not found");
+        }
+
         public async Task<Login> AddLogin(Login login)
         {
             _context.Logins.Add(login);
@@ -74,7 +92,7 @@ namespace Rent.Infrastructure.Repositories
                 ?? throw new Exception("Login not found.");
 
             query.Email = login.Email;
-            query.Password = login.Password;
+            // query.Password = login.Password;
 
             await _context.SaveChangesAsync();
 

@@ -29,9 +29,9 @@ namespace Rent.Domain.Services
                 Subject = new ClaimsIdentity(
                     new[]
                     {
-                        new Claim(ClaimTypes.Sid, login.ParentId.ToString()),
+                        new Claim("ParentId", login.ParentId.ToString()),
                         new Claim(ClaimTypes.Email, login.Email),
-                        new Claim(ClaimTypes.Role, login.UserType.ToString()),
+                        new Claim("UserType", login.UserType.ToString()),
                     }
                 ),
                 Expires = DateTime.UtcNow.AddHours(1),

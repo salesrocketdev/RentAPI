@@ -2,6 +2,7 @@
 using Rent.Domain.Interfaces.Services;
 using Rent.Domain.Entities;
 using Rent.Core.Models;
+using Rent.Domain.DTO.Response;
 
 namespace Rent.Domain.Services
 {

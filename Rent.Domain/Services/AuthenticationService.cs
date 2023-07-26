@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using AutoMapper;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
@@ -25,7 +27,13 @@ namespace Rent.Domain.Services
 
         public async Task<TokenResponse> Authenticate(string email, string password)
         {
-            Login login = await _loginRepository.Authenticate(email, password);
+            Login login = await _loginRepository.GetLoginByEmail(email);
+
+            if (login == null)
+            {
+                throw new Exception("Usuário não encontrado.");
+            }
+
             var token = _tokenService.GenerateToken(login);
 
             TokenResponse tokenResponse = new TokenResponse()
@@ -35,6 +43,29 @@ namespace Rent.Domain.Services
             };
 
             return tokenResponse;
+        }
+
+        public UserMeta GetUserMeta(string token)
+        {
+            // Decodificar o token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+            // Obter o tipo de usuário (UserType) das reivindicações (claims)
+            var userMeta = new UserMeta
+            {
+                UserType = jwtToken.Claims.FirstOrDefault(x => x.Type == "UserType")?.Value,
+                ParentId = int.Parse(
+                    jwtToken.Claims.FirstOrDefault(x => x.Type == "ParentId")?.Value
+                )
+            };
+
+            if (userMeta == null)
+            {
+                throw new Exception("Tipo de usuário não encontrado no token.");
+            }
+
+            return userMeta;
         }
     }
 }

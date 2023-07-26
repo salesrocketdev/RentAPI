@@ -10,7 +10,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [Route("api/v1/[controller]")]
     [SwaggerTag("Logins")]
     [ApiController]
@@ -62,11 +62,71 @@ namespace Rent.API.Controllers
             }
         }
 
-        // [HttpGet("{id}")]
-        // [SwaggerOperation(
-        //     Summary = "Obter login por ID.",
-        //     Description = "Retorna um login específico com base no seu ID."
-        // )]
+        [HttpGet("{id}")]
+        [SwaggerOperation(
+            Summary = "Obter login por ID.",
+            Description = "Retorna um login específico com base no seu ID."
+        )]
+        public async Task<ActionResult<LoginDTO>> GetLoginById(int id)
+        {
+            try
+            {
+                Login login = await _loginService.GetLoginById(id);
+                LoginDTO loginDTO = _mapper.Map<LoginDTO>(login);
+
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 1,
+                    Message = "Success.",
+                    Data = loginDTO
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 0,
+                    Message = ex.Message
+                };
+
+                return BadRequest(response);
+            }
+        }
+
+        [HttpGet("{parent_id}")]
+        [SwaggerOperation(
+            Summary = "Obter login por Parent ID.",
+            Description = "Retorna um login específico com base no seu Parent ID."
+        )]
+        public async Task<ActionResult<LoginDTO>> GetLoginByParentId(int parentId)
+        {
+            try
+            {
+                Login login = await _loginService.GetLoginById(parentId);
+                LoginDTO loginDTO = _mapper.Map<LoginDTO>(login);
+
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 1,
+                    Message = "Success.",
+                    Data = loginDTO
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 0,
+                    Message = ex.Message
+                };
+
+                return BadRequest(response);
+            }
+        }
 
         [HttpPost("CreateLogin")]
         [SwaggerOperation(Summary = "Criar um novo login.", Description = "Cria um novo login.")]
@@ -98,6 +158,76 @@ namespace Rent.API.Controllers
                 {
                     Code = 0,
                     Message = ex.Message,
+                };
+
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPut]
+        [SwaggerOperation(
+            Summary = "Atualiza um login existente.",
+            Description = "Atualiza um login existente."
+        )]
+        public async Task<ActionResult<LoginDTO>> UpdateLogin(LoginDTO loginRequest)
+        {
+            try
+            {
+                // Mapear a CarDTO para a entidade Car
+                Login login = _mapper.Map<Login>(loginRequest);
+
+                // Adicionar o carro usando o serviço
+                Login updatedLogin = await _loginService.UpdateLogin(login);
+
+                // Mapear o carro adicionado de volta para CarDTO
+                LoginDTO updatedLoginDTO = _mapper.Map<LoginDTO>(updatedLogin);
+
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 1,
+                    Message = "Success.",
+                    Data = updatedLoginDTO
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 0,
+                    Message = ex.Message,
+                };
+
+                return BadRequest(response);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [SwaggerOperation(
+            Summary = "Remover login por ID.",
+            Description = "Remove um login específico com base no seu ID."
+        )]
+        public async Task<ActionResult<LoginDTO>> DeleteLogin(int id)
+        {
+            try
+            {
+                await _loginService.DeleteLogin(id);
+
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 1,
+                    Message = "Success.",
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                {
+                    Code = 0,
+                    Message = ex.Message
                 };
 
                 return BadRequest(response);

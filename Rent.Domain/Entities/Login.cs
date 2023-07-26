@@ -12,7 +12,7 @@ namespace Rent.Domain.Entities
         [Required(ErrorMessage = "O Email é obrigatório.")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "A Senha é obrigatória.")]
+        [Required(ErrorMessage = "A senha é obrigatória.")]
         public string? Password { get; set; }
 
         [Required(ErrorMessage = "O UserType é obrigatório.")]

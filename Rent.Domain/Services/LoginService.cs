@@ -8,6 +8,7 @@ namespace Rent.Domain.Services
 {
     public class LoginService : ILoginService
     {
+        private readonly IAuthenticationService _authenticationService;
         private readonly ICustomerService _customerService;
         private readonly IEmployeeService _employeeService;
         private readonly IOwnerService _ownerService;
@@ -15,6 +16,7 @@ namespace Rent.Domain.Services
         private readonly IMapper _mapper;
 
         public LoginService(
+            IAuthenticationService authenticationService,
             ICustomerService customerService,
             IEmployeeService employeeService,
             IOwnerService ownerService,
@@ -22,6 +24,7 @@ namespace Rent.Domain.Services
             IMapper mapper
         )
         {
+            _authenticationService = authenticationService;
             _customerService = customerService;
             _employeeService = employeeService;
             _ownerService = ownerService;
@@ -37,6 +40,11 @@ namespace Rent.Domain.Services
         public async Task<Login> GetLoginById(int id)
         {
             return await _loginRepository.GetLoginById(id);
+        }
+
+        public async Task<Login> GetLoginByParentId(int parentId)
+        {
+            return await _loginRepository.GetLoginByParentId(parentId);
         }
 
         public async Task<Login> AddLogin(Login login)

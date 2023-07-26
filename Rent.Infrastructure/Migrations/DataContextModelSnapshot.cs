@@ -8,7 +8,7 @@ using Rent.Infrastructure.Data;
 
 #nullable disable
 
-namespace RentAPI.Migrations
+namespace Rent.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
