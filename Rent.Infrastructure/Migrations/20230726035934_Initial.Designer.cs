@@ -12,7 +12,7 @@ using Rent.Infrastructure.Data;
 namespace Rent.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230726021515_Initial")]
+    [Migration("20230726035934_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -233,14 +233,6 @@ namespace Rent.Infrastructure.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
