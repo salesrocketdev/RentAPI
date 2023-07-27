@@ -9,6 +9,8 @@ namespace Rent.Domain.Services
     public class LoginService : ILoginService
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly ISecurityService _securityService;
+
         private readonly ICustomerService _customerService;
         private readonly IEmployeeService _employeeService;
         private readonly IOwnerService _ownerService;
@@ -17,6 +19,7 @@ namespace Rent.Domain.Services
 
         public LoginService(
             IAuthenticationService authenticationService,
+            ISecurityService securityService,
             ICustomerService customerService,
             IEmployeeService employeeService,
             IOwnerService ownerService,
@@ -25,6 +28,7 @@ namespace Rent.Domain.Services
         )
         {
             _authenticationService = authenticationService;
+            _securityService = securityService;
             _customerService = customerService;
             _employeeService = employeeService;
             _ownerService = ownerService;
@@ -78,6 +82,11 @@ namespace Rent.Domain.Services
 
                 login.Email = customer.Email;
             }
+
+            var hash = _securityService.HashPassword(login.Password, out var salt);
+
+            login.PasswordHash = hash;
+            login.PasswordSalt = salt;
 
             return await _loginRepository.AddLogin(login);
         }

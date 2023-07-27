@@ -1,4 +1,5 @@
-﻿using Rent.Core.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Rent.Core.Models;
 using Rent.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,10 +13,16 @@ namespace Rent.Domain.Entities
         [Required(ErrorMessage = "O Email é obrigatório.")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "A senha é obrigatória.")]
+        [NotMapped]
         public string? Password { get; set; }
+
+        [Required(ErrorMessage = "O Salt é obrigatório.")]
+        public byte[]? PasswordSalt { get; set; }
 
         [Required(ErrorMessage = "O UserType é obrigatório.")]
         public UserType UserType { get; set; }
+
+        [Required(ErrorMessage = "O Hash da Senha é obrigatório.")]
+        public byte[]? PasswordHash { get; set; }
     }
 }

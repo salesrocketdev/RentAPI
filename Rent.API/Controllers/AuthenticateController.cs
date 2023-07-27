@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.IdentityModel.Tokens.Jwt;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.DTO.Response;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -56,14 +58,14 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<AuthenticateDTO> response = new() { Code = 0, Message = ex.Message, };
+                // ApiResponse<AuthenticateDTO> response = new() { Code = 0, Message = ex.Message, };
 
-                return BadRequest(response);
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet("Me")]
-          [SwaggerOperation(
+        [SwaggerOperation(
             Summary = "Buscar dados do usuário logado.",
             Description = "Realiza uma busca de usuário baseado no token JWT do usuário logado."
         )]
@@ -75,7 +77,7 @@ namespace Rent.API.Controllers
                 .FirstOrDefault()
                 ?.Replace("Bearer ", "");
 
-            if (token == null)
+            if (string.IsNullOrEmpty(token))
             {
                 return BadRequest("Token não fornecido.");
             }
@@ -83,28 +85,75 @@ namespace Rent.API.Controllers
             // Busca tipo de usuário
             UserMeta userMeta = _authenticationService.GetUserMeta(token);
 
-            if(userMeta.UserType == null)
+            if (userMeta.UserType == null)
                 return BadRequest("Tipo de usuário não encontrado.");
 
-            if(userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 1))){
+            if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 1)))
+            {
                 var owner = await _ownerService.GetOwnerById(userMeta.ParentId);
 
                 return Ok(owner);
             }
 
-            if(userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 2))){
+            if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 2)))
+            {
                 var owner = await _employeeService.GetEmployeeById(userMeta.ParentId);
 
                 return Ok(owner);
             }
 
-            if(userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 3))){
+            if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 3)))
+            {
                 var owner = await _customerService.GetCustomerById(userMeta.ParentId);
 
                 return Ok(owner);
             }
 
             return BadRequest("Não encontrado.");
+        }
+
+        [HttpPost("Logout")]
+        [SwaggerOperation(
+            Summary = "Logout do usuário.",
+            Description = "Revoga o token de autenticação do usuário."
+        )]
+        public IActionResult Logout()
+        {
+            // Extrair o token do header de autorização
+            string? token = HttpContext.Request.Headers["Authorization"]
+                .FirstOrDefault()
+                ?.Split(" ")
+                .Last();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest("Token de autenticação não fornecido.");
+            }
+
+            // bool logoutResult = await _authenticationService.RevokeToken(token);
+            bool logoutResult = true;
+
+            if (logoutResult)
+            {
+                // Adicione o token revogado à lista de tokens revogados
+                var jwtTokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = jwtTokenHandler.ReadJwtToken(token);
+
+                // Adicione o token revogado à tabela de RevokedTokens no banco de dados
+                var revokedToken = new RevokedToken
+                {
+                    Id = int.Parse(jwtToken.Id),
+                    ExpirationDate = jwtToken.ValidTo
+                };
+
+                _authenticationService.RevokeToken(revokedToken);
+
+                return Ok("Logout realizado com sucesso.");
+            }
+            else
+            {
+                return BadRequest("Falha ao realizar o logout.");
+            }
         }
     }
 }

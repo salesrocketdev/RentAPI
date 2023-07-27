@@ -23,6 +23,7 @@ namespace Rent.Infrastructure.Data
         public DbSet<Car> Cars => Set<Car>();
         public DbSet<Login> Logins => Set<Login>();
         public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<RevokedToken> RevokedTokens => Set<RevokedToken>();
         public DbSet<Employee> Employees => Set<Employee>();
         public DbSet<Owner> Owners => Set<Owner>();
         public DbSet<Document> Documents => Set<Document>();

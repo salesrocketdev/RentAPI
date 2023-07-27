@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
+using System.Text;
 using AutoMapper;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
@@ -11,17 +12,23 @@ namespace Rent.Domain.Services
     public class AuthenticationService : IAuthenticationService
     {
         private readonly ITokenService _tokenService;
+        private readonly ISecurityService _securityService;
         private readonly ILoginRepository _loginRepository;
+        private readonly IAuthenticationRepository _authenticationRepository;
         private readonly IMapper _mapper;
 
         public AuthenticationService(
             ITokenService tokenService,
+            ISecurityService securityService,
             ILoginRepository loginRepository,
+            IAuthenticationRepository authenticationRepository,
             IMapper mapper
         )
         {
             _tokenService = tokenService;
+            _securityService = securityService;
             _loginRepository = loginRepository;
+            _authenticationRepository = authenticationRepository;
             _mapper = mapper;
         }
 
@@ -32,6 +39,19 @@ namespace Rent.Domain.Services
             if (login == null)
             {
                 throw new Exception("Usuário não encontrado.");
+            }
+
+            var hash = _securityService.HashPassword(password, out var salt);
+
+            var verificationResult = _securityService.VerifyPassword(
+                password,
+                login.PasswordHash,
+                login.PasswordSalt
+            );
+
+            if (verificationResult == false)
+            {
+                throw new Exception("Senha incorreta.");
             }
 
             var token = _tokenService.GenerateToken(login);
@@ -66,6 +86,11 @@ namespace Rent.Domain.Services
             }
 
             return userMeta;
+        }
+
+        public async Task<RevokedToken> RevokeToken(RevokedToken revokedToken)
+        {
+            return await _authenticationRepository.RevokeToken(revokedToken);
         }
     }
 }

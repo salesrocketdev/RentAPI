@@ -19,6 +19,7 @@ namespace Rent.API.ConfigurationInjector
             services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<ISecurityService, SecurityService>();
 
             //Repositories
             services.AddScoped<ICarRepository, CarRepository>();
@@ -26,6 +27,7 @@ namespace Rent.API.ConfigurationInjector
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IOwnerRepository, OwnerRepository>();
             services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
         }
     }
 }

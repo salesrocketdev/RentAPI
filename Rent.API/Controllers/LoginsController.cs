@@ -10,17 +10,23 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {
-    // [Authorize]
+    [Authorize]
     [Route("api/v1/[controller]")]
     [SwaggerTag("Logins")]
     [ApiController]
     public class LoginsController : ControllerBase
     {
+        private readonly IAuthenticationService _authenticationService;
         private readonly ILoginService _loginService;
         private readonly IMapper _mapper;
 
-        public LoginsController(ILoginService loginService, IMapper mapper)
+        public LoginsController(
+            IAuthenticationService authenticationService,
+            ILoginService loginService,
+            IMapper mapper
+        )
         {
+            _authenticationService = authenticationService;
             _loginService = loginService;
             _mapper = mapper;
         }
@@ -128,7 +134,7 @@ namespace Rent.API.Controllers
             }
         }
 
-        [HttpPost("CreateLogin")]
+        [HttpPost]
         [SwaggerOperation(Summary = "Criar um novo login.", Description = "Cria um novo login.")]
         public async Task<ActionResult<LoginRequest>> CreateLogin(LoginRequest loginRequest)
         {
