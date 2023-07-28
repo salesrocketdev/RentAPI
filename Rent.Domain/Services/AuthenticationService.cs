@@ -88,6 +88,54 @@ namespace Rent.Domain.Services
             return userMeta;
         }
 
+        public async Task<TokenResponse> Refresh(string token)
+        {
+            // Decodificar o token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+            if (jwtToken == null)
+                throw new Exception("Token inválido.");
+
+            var guidToken = jwtToken.Claims.FirstOrDefault(x => x.Type == "jti")?.Value;
+            var emailToken = jwtToken.Claims.FirstOrDefault(x => x.Type == "email")?.Value;
+
+            if (!string.IsNullOrEmpty(guidToken))
+            {
+                // Checa se o token atual já foi revogado
+                if (await IsTokenRevoked(guidToken))
+                    throw new Exception("Token inválido.");
+                else
+                {
+                    // Invalidar token original
+                    var revokedToken = new RevokedToken
+                    {
+                        TokenId = jwtToken.Id,
+                        ExpirationDate = jwtToken.ValidTo
+                    };
+
+                    await RevokeToken(revokedToken);
+                }
+            }
+
+            Login login = await _loginRepository.GetLoginByEmail(emailToken);
+
+            var refreshToken = _tokenService.GenerateToken(login);
+
+            TokenResponse tokenResponse = new TokenResponse()
+            {
+                Token = refreshToken,
+                ExpiresAt = DateTime.Now.AddHours(1)
+            };
+
+            return tokenResponse;
+        }
+
+        public async Task<bool> IsTokenRevoked(string token)
+        {
+            return await _authenticationRepository.IsTokenRevoked(token);
+        }
+
         public async Task<RevokedToken> RevokeToken(RevokedToken revokedToken)
         {
             return await _authenticationRepository.RevokeToken(revokedToken);

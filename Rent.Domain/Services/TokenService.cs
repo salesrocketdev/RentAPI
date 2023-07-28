@@ -19,16 +19,17 @@ namespace Rent.Domain.Services
 
         public string GenerateToken(Login login)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
             byte[] key = Encoding.ASCII.GetBytes(
                 _configuration.GetSection("AppSettings:Secret").Value
             );
 
+            var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(
                     new[]
                     {
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim("ParentId", login.ParentId.ToString()),
                         new Claim(ClaimTypes.Email, login.Email),
                         new Claim("UserType", login.UserType.ToString()),

@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+using Rent.Core.Models;
+
 namespace Rent.Domain.Entities
 {
-    public class RevokedToken
+    public class RevokedToken : BaseModel
     {
-        public int Id { get; set; }
+        [Required]
+        public string? TokenId { get; set; }
         public DateTime ExpirationDate { get; set; }
     }
 }

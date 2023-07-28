@@ -17,7 +17,7 @@ namespace Rent.API.ConfigurationInjector
             services.AddTransient<IEmployeeService, EmployeeService>();
             services.AddTransient<IOwnerService, OwnerService>();
             services.AddTransient<ILoginService, LoginService>();
-            services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISecurityService, SecurityService>();
 

@@ -37,7 +37,7 @@ namespace Rent.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost(Name = "AuthenticateUser")]
+        [HttpPost("Login")]
         [SwaggerOperation(
             Summary = "Realizar autenticação.",
             Description = "Realiza a autenticação com um usuário já registrado e retorna um token JWT."
@@ -58,8 +58,6 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                // ApiResponse<AuthenticateDTO> response = new() { Code = 0, Message = ex.Message, };
-
                 return BadRequest(ex.Message);
             }
         }
@@ -112,6 +110,29 @@ namespace Rent.API.Controllers
             return BadRequest("Não encontrado.");
         }
 
+        [HttpPost("Refresh")]
+        [SwaggerOperation(
+            Summary = "Atualiza token do usuário.",
+            Description = "Atualiza o token de autenticação do usuário."
+        )]
+        public IActionResult Refresh()
+        {
+            // Extrair o token do header de autorização
+            string? token = HttpContext.Request.Headers["Authorization"]
+                .FirstOrDefault()
+                ?.Split(" ")
+                .Last();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest("Token de autenticação não fornecido.");
+            }
+
+            var refreshedToken = _authenticationService.Refresh(token);
+
+            return Ok(refreshedToken);
+        }
+
         [HttpPost("Logout")]
         [SwaggerOperation(
             Summary = "Logout do usuário.",
@@ -139,10 +160,9 @@ namespace Rent.API.Controllers
                 var jwtTokenHandler = new JwtSecurityTokenHandler();
                 var jwtToken = jwtTokenHandler.ReadJwtToken(token);
 
-                // Adicione o token revogado à tabela de RevokedTokens no banco de dados
                 var revokedToken = new RevokedToken
                 {
-                    Id = int.Parse(jwtToken.Id),
+                    TokenId = jwtToken.Id,
                     ExpirationDate = jwtToken.ValidTo
                 };
 

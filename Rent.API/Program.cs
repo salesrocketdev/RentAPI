@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Rent.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 byte[] key = Encoding.ASCII.GetBytes(
@@ -118,6 +119,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<JwtBlacklistMiddleware>();
 
 app.MapControllers();
 
