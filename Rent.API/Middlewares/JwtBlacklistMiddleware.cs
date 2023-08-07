@@ -1,7 +1,7 @@
 using Rent.Domain.Interfaces.Services;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace Rent.API.Middleware
+namespace Rent.API.Middlewares
 {
     public class JwtBlacklistMiddleware
     {

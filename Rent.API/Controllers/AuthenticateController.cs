@@ -1,13 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rent.Core.Models;
+using Rent.API.SwaggerExamples;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Rent.API.Controllers
 {
@@ -16,25 +16,22 @@ namespace Rent.API.Controllers
     [ApiController]
     public class Authenticate : ControllerBase
     {
-        private readonly Rent.Domain.Interfaces.Services.IAuthenticationService _authenticationService;
+        private readonly IAuthenticationService _authenticationService;
         private readonly IOwnerService _ownerService;
         private readonly IEmployeeService _employeeService;
         private readonly ICustomerService _customerService;
-        private readonly IMapper _mapper;
 
         public Authenticate(
-            Rent.Domain.Interfaces.Services.IAuthenticationService authenticationService,
+            IAuthenticationService authenticationService,
             IOwnerService ownerService,
             IEmployeeService employeeService,
-            ICustomerService customerService,
-            IMapper mapper
+            ICustomerService customerService
         )
         {
             _authenticationService = authenticationService;
             _ownerService = ownerService;
             _employeeService = employeeService;
             _customerService = customerService;
-            _mapper = mapper;
         }
 
         [HttpPost("Login")]
@@ -42,6 +39,7 @@ namespace Rent.API.Controllers
             Summary = "Realizar autenticação.",
             Description = "Realiza a autenticação com um usuário já registrado e retorna um token JWT."
         )]
+        // [SwaggerRequestExample(typeof(AuthenticateDTO), typeof(LoginRequestExample))]
         public async Task<ActionResult> AuthenticateUser(AuthenticateDTO authenticateDTO)
         {
             try
@@ -70,44 +68,51 @@ namespace Rent.API.Controllers
         [Authorize]
         public async Task<IActionResult> Me()
         {
-            // Extrair o token do header de autorização
-            string? token = HttpContext.Request.Headers["Authorization"]
-                .FirstOrDefault()
-                ?.Replace("Bearer ", "");
-
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                return BadRequest("Token não fornecido.");
+                // Extrair o token do header de autorização
+                string? token = HttpContext.Request.Headers["Authorization"]
+                    .FirstOrDefault()
+                    ?.Replace("Bearer ", "");
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return BadRequest("Token não fornecido.");
+                }
+
+                // Busca tipo de usuário
+                UserMeta userMeta = _authenticationService.GetUserMeta(token);
+
+                if (userMeta.UserType == null)
+                    return BadRequest("Tipo de usuário não encontrado.");
+
+                if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 1)))
+                {
+                    var owner = await _ownerService.GetOwnerById(userMeta.ParentId);
+
+                    return Ok(owner);
+                }
+
+                if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 2)))
+                {
+                    var owner = await _employeeService.GetEmployeeById(userMeta.ParentId);
+
+                    return Ok(owner);
+                }
+
+                if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 3)))
+                {
+                    var owner = await _customerService.GetCustomerById(userMeta.ParentId);
+
+                    return Ok(owner);
+                }
+
+                return BadRequest("Não encontrado.");
             }
-
-            // Busca tipo de usuário
-            UserMeta userMeta = _authenticationService.GetUserMeta(token);
-
-            if (userMeta.UserType == null)
-                return BadRequest("Tipo de usuário não encontrado.");
-
-            if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 1)))
+            catch (Exception ex)
             {
-                var owner = await _ownerService.GetOwnerById(userMeta.ParentId);
-
-                return Ok(owner);
+                return BadRequest(ex.Message);
             }
-
-            if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 2)))
-            {
-                var owner = await _employeeService.GetEmployeeById(userMeta.ParentId);
-
-                return Ok(owner);
-            }
-
-            if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 3)))
-            {
-                var owner = await _customerService.GetCustomerById(userMeta.ParentId);
-
-                return Ok(owner);
-            }
-
-            return BadRequest("Não encontrado.");
         }
 
         [HttpPost("Refresh")]
@@ -115,22 +120,29 @@ namespace Rent.API.Controllers
             Summary = "Atualiza token do usuário.",
             Description = "Atualiza o token de autenticação do usuário."
         )]
-        public IActionResult Refresh()
+        [Authorize]
+        public async Task<IActionResult> RefreshAsync()
         {
-            // Extrair o token do header de autorização
-            string? token = HttpContext.Request.Headers["Authorization"]
-                .FirstOrDefault()
-                ?.Split(" ")
-                .Last();
-
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                return BadRequest("Token de autenticação não fornecido.");
+                // Extrair o token do header de autorização
+                string? token = HttpContext.Request.Headers["Authorization"]
+                    .FirstOrDefault()
+                    ?.Replace("Bearer ", "");
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return BadRequest("Token de autenticação não fornecido.");
+                }
+
+                var refreshedToken = await _authenticationService.Refresh(token);
+
+                return Ok(refreshedToken);
             }
-
-            var refreshedToken = _authenticationService.Refresh(token);
-
-            return Ok(refreshedToken);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("Logout")]
@@ -138,7 +150,7 @@ namespace Rent.API.Controllers
             Summary = "Logout do usuário.",
             Description = "Revoga o token de autenticação do usuário."
         )]
-        public IActionResult Logout()
+        public async Task<IActionResult> LogoutAsync()
         {
             // Extrair o token do header de autorização
             string? token = HttpContext.Request.Headers["Authorization"]
@@ -156,7 +168,6 @@ namespace Rent.API.Controllers
 
             if (logoutResult)
             {
-                // Adicione o token revogado à lista de tokens revogados
                 var jwtTokenHandler = new JwtSecurityTokenHandler();
                 var jwtToken = jwtTokenHandler.ReadJwtToken(token);
 
@@ -166,7 +177,8 @@ namespace Rent.API.Controllers
                     ExpirationDate = jwtToken.ValidTo
                 };
 
-                _authenticationService.RevokeToken(revokedToken);
+                // Adicione o token revogado à lista de tokens revogados
+                await _authenticationService.RevokeToken(revokedToken);
 
                 return Ok("Logout realizado com sucesso.");
             }

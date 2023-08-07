@@ -5,7 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Rent.API.Middleware;
+using Rent.API.Middlewares;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 byte[] key = Encoding.ASCII.GetBytes(
@@ -51,6 +52,8 @@ builder.Services.AddSwaggerGen(option =>
             }
         }
     );
+
+    // option.ExampleFilters();
 });
 
 builder.Services.RegisterService();

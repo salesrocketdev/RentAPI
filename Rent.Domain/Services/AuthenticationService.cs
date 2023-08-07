@@ -56,11 +56,8 @@ namespace Rent.Domain.Services
 
             var token = _tokenService.GenerateToken(login);
 
-            TokenResponse tokenResponse = new TokenResponse()
-            {
-                Token = token,
-                ExpiresAt = DateTime.Now.AddHours(1)
-            };
+            TokenResponse tokenResponse =
+                new() { Token = token, ExpiresAt = DateTime.Now.AddHours(1) };
 
             return tokenResponse;
         }
@@ -92,10 +89,7 @@ namespace Rent.Domain.Services
         {
             // Decodificar o token
             var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-
-            if (jwtToken == null)
-                throw new Exception("Token inválido.");
+            var jwtToken = tokenHandler.ReadJwtToken(token);
 
             var guidToken = jwtToken.Claims.FirstOrDefault(x => x.Type == "jti")?.Value;
             var emailToken = jwtToken.Claims.FirstOrDefault(x => x.Type == "email")?.Value;
@@ -122,11 +116,8 @@ namespace Rent.Domain.Services
 
             var refreshToken = _tokenService.GenerateToken(login);
 
-            TokenResponse tokenResponse = new TokenResponse()
-            {
-                Token = refreshToken,
-                ExpiresAt = DateTime.Now.AddHours(1)
-            };
+            TokenResponse tokenResponse =
+                new() { Token = refreshToken, ExpiresAt = DateTime.Now.AddHours(1) };
 
             return tokenResponse;
         }
