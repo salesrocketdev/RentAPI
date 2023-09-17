@@ -53,8 +53,10 @@ builder.Services.AddSwaggerGen(option =>
         }
     );
 
-    // option.ExampleFilters();
 });
+
+//Swagger Examples
+// builder.Services.AddSwaggerExamples();
 
 builder.Services.RegisterService();
 builder.Services.AddAutoMapper(typeof(MappingProfile));

@@ -10,7 +10,7 @@ using Rent.Domain.Interfaces.Services;
 
 namespace Rent.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Owner")]
     [Route("api/v1/[controller]")]
     [SwaggerTag("Administradores")]
     [ApiController]

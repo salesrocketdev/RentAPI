@@ -121,7 +121,7 @@ namespace Rent.API.Controllers
             Description = "Atualiza o token de autenticação do usuário."
         )]
         [Authorize]
-        public async Task<IActionResult> RefreshAsync()
+        public async Task<IActionResult> Refresh()
         {
             try
             {
@@ -150,7 +150,7 @@ namespace Rent.API.Controllers
             Summary = "Logout do usuário.",
             Description = "Revoga o token de autenticação do usuário."
         )]
-        public async Task<IActionResult> LogoutAsync()
+        public async Task<IActionResult> Logout()
         {
             // Extrair o token do header de autorização
             string? token = HttpContext.Request.Headers["Authorization"]
