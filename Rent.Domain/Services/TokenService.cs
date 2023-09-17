@@ -33,7 +33,7 @@ namespace Rent.Domain.Services
                         new Claim("ParentId", login.ParentId.ToString()),
                         new Claim(ClaimTypes.Email, login.Email),
                         new Claim("UserType", login.UserType.ToString()),
-                        new Claim(ClaimTypes.Role, Enum.GetName(typeof(Domain.Enums.UserType)))
+                        new Claim(ClaimTypes.Role, login.UserType.ToString())
                     }
                 ),
                 Expires = DateTime.UtcNow.AddHours(1),

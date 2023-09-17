@@ -14,9 +14,11 @@ namespace Rent.Infrastructure.Data
         {
             if (!options.IsConfigured)
             {
-                options.UseSqlServer(
-                    "Server=localhost,1433;Database=Rent;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=True"
-                );
+                // options.UseSqlServer(
+                //     "Server=localhost,1433;Database=Rent;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=True"
+                // );
+
+                options.UseSqlServer("workstation id=RentDatabase.mssql.somee.com;packet size=4096;user id=salesrocketdev_SQLLogin_1;pwd=iwb7i1abem;data source=RentDatabase.mssql.somee.com;persist security info=False;initial catalog=RentDatabase;TrustServerCertificate=True");
             }
         }
 

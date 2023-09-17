@@ -25,6 +25,7 @@ namespace Rent.API.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpGet]
         [SwaggerOperation(
             Summary = "Retorna todos os funcionários cadastrados no sistema.",
@@ -65,6 +66,7 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner, Employee")]
         [HttpGet("{id}")]
         [SwaggerOperation(
             Summary = "Obter funcionário por ID.",
@@ -98,6 +100,7 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpPost]
         [SwaggerOperation(
             Summary = "Criar um novo funcionário.",
@@ -176,6 +179,7 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id}")]
         [SwaggerOperation(
             Summary = "Remover funcionário por ID.",
