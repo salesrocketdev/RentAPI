@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Rent.Domain.DTO.Request;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -11,7 +7,11 @@ namespace Rent.API.SwaggerExamples
     {
         public AuthenticateDTO GetExamples()
         {
-            return new AuthenticateDTO { Email = "admin@email.com", Password = "admin" };
+            return new AuthenticateDTO 
+            {
+                Email = "admin@email.com", 
+                Password = "admin" 
+            };
         }
     }
 }

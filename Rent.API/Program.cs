@@ -1,19 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using Rent.Infrastructure.Data;
-using Rent.API.ConfigurationInjector;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Rent.API.ConfigurationInjector;
 using Rent.API.Middlewares;
-using Swashbuckle.AspNetCore.Filters;
+using Rent.Infrastructure.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 byte[] key = Encoding.ASCII.GetBytes(
     s: builder.Configuration.GetSection("AppSettings:Secret").Value
 );
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 
@@ -52,11 +49,7 @@ builder.Services.AddSwaggerGen(option =>
             }
         }
     );
-
 });
-
-//Swagger Examples
-// builder.Services.AddSwaggerExamples();
 
 builder.Services.RegisterService();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -116,6 +109,10 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<DataContext>();
     context.Database.Migrate();
+
+    // Chame o método Seed da classe DataSeeder
+    var dataSeeder = services.GetRequiredService<DataSeeder>();
+    dataSeeder.Seed();
 }
 
 app.UseCors("RentOrigins");

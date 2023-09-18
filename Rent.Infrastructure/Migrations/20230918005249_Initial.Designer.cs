@@ -12,7 +12,7 @@ using Rent.Infrastructure.Data;
 namespace Rent.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230917231917_Initial")]
+    [Migration("20230918005249_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
