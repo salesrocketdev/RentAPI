@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Rent.Domain.Entities;
 using Rent.Domain.Enums;
 using Rent.Domain.Interfaces.Services;
@@ -13,20 +9,17 @@ namespace Rent.Infrastructure.Seeders
     {
         private readonly DataContext _context;
 
-        private readonly IAuthenticationService _authenticationService;
+        private readonly ISecurityService _securityService;
 
-        public LoginSeeder(DataContext context, IAuthenticationService authenticationService)
+        public LoginSeeder(DataContext context, ISecurityService securityService)
         {
             _context = context;
-            _authenticationService = authenticationService;
+            _securityService = securityService;
         }
 
         public void Seed()
         {
-            byte[] salt;
-            byte[] hash;
-
-            // Verifica se já existem registros no banco de da dos
+            // Verifica se já existem registros no banco de dados
             if (_context.Logins.Any())
             {
                 return; // Se já existir, não faz nada
@@ -35,11 +28,20 @@ namespace Rent.Infrastructure.Seeders
             // Insere os registros iniciais
             var login = new Login
             {
-                ParentId = 1,
-                Email = "user1@example.com",
-                // PasswordHash = _authenticationService.HashPassword("admin123", out salt, out hash), // Faça o hash da senha aqui
+                ParentId = _context.Owners.First().Id,
+                Email = "admin@email.com",
+                CreatedAt = DateTime.Now,
+                Password = "admin",
                 UserType = UserType.Owner
             };
+
+            var hash = _securityService.HashPassword(login.Password, out var salt);
+
+            login.PasswordHash = hash;
+            login.PasswordSalt = salt;
+
+            _context.Logins.Add(login);
+            _context.SaveChanges();
         }
     }
 }

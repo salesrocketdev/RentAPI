@@ -1,7 +1,9 @@
 ﻿using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
 using Rent.Domain.Services;
+using Rent.Infrastructure.Data;
 using Rent.Infrastructure.Repositories;
+using Rent.Infrastructure.Seeders;
 
 namespace Rent.API.ConfigurationInjector
 {
@@ -10,6 +12,11 @@ namespace Rent.API.ConfigurationInjector
         public static void RegisterService(this IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            //Data Seeders
+            services.AddTransient<DataSeeder>();
+            services.AddTransient<LoginSeeder>();
+            services.AddTransient<OwnerSeeder>();
 
             //Services
             services.AddTransient<ICarService, CarService>();

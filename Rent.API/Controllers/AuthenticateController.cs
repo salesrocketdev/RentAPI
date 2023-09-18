@@ -1,13 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rent.API.SwaggerExamples;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
-using Swashbuckle.AspNetCore.Filters;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Rent.API.Controllers
 {
@@ -39,8 +37,7 @@ namespace Rent.API.Controllers
             Summary = "Realizar autenticação.",
             Description = "Realiza a autenticação com um usuário já registrado e retorna um token JWT."
         )]
-        [SwaggerRequestExample(typeof(AuthenticateDTO), typeof(LoginRequestExample))]
-        public async Task<ActionResult> AuthenticateUser(AuthenticateDTO authenticateDTO)
+        public async Task<ActionResult> AuthenticateUser([FromBody] AuthenticateDTO authenticateDTO)
         {
             try
             {
@@ -60,12 +57,12 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("Me")]
         [SwaggerOperation(
             Summary = "Buscar dados do usuário logado.",
             Description = "Realiza uma busca de usuário baseado no token JWT do usuário logado."
         )]
-        [Authorize]
         public async Task<IActionResult> Me()
         {
             try
@@ -115,12 +112,12 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("Refresh")]
         [SwaggerOperation(
             Summary = "Atualiza token do usuário.",
             Description = "Atualiza o token de autenticação do usuário."
         )]
-        [Authorize]
         public async Task<IActionResult> Refresh()
         {
             try
@@ -145,6 +142,7 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("Logout")]
         [SwaggerOperation(
             Summary = "Logout do usuário.",
