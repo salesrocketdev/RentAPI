@@ -12,8 +12,6 @@ byte[] key = Encoding.ASCII.GetBytes(
     s: builder.Configuration.GetSection("AppSettings:Secret").Value
 );
 
-// Add services to the container.
-
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
