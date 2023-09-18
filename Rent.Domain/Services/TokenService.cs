@@ -36,7 +36,8 @@ namespace Rent.Domain.Services
                         new Claim(ClaimTypes.Role, login.UserType.ToString())
                     }
                 ),
-                Expires = DateTime.UtcNow.AddHours(1),
+                //Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.Now.AddMinutes(3600),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature
