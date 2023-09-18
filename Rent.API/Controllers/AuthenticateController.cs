@@ -39,7 +39,7 @@ namespace Rent.API.Controllers
             Summary = "Realizar autenticação.",
             Description = "Realiza a autenticação com um usuário já registrado e retorna um token JWT."
         )]
-        // [SwaggerRequestExample(typeof(AuthenticateDTO), typeof(LoginRequestExample))]
+        [SwaggerRequestExample(typeof(AuthenticateDTO), typeof(LoginRequestExample))]
         public async Task<ActionResult> AuthenticateUser(AuthenticateDTO authenticateDTO)
         {
             try
