@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
-using Rent.Domain.Interfaces;
+﻿using Moq;
 using Rent.Domain.Entities;
 using Rent.Core.Models;
-using Xunit;
-using System.Runtime.ConstrainedExecution;
 using Rent.Domain.Services;
+using Rent.Domain.Interfaces.Repositories;
+using Rent.Domain.Interfaces.Services;
 
 namespace Rent.Tests.Services
 {
@@ -28,11 +24,26 @@ namespace Rent.Tests.Services
             // Arrange
             int pageNumber = 1;
             int pageSize = 10;
-            var expectedCars = new List<Car> 
-            { 
-                new Car { Id = 1, Brand = "Toyota", Model = "Camry" },
-                new Car { Id = 2, Brand = "Honda", Model = "Civic" },
-                new Car { Id = 3, Brand = "Ford", Model = "Mustang" } 
+            var expectedCars = new List<Car>
+            {
+                new Car
+                {
+                    Id = 1,
+                    Brand = "Toyota",
+                    Model = "Camry"
+                },
+                new Car
+                {
+                    Id = 2,
+                    Brand = "Honda",
+                    Model = "Civic"
+                },
+                new Car
+                {
+                    Id = 3,
+                    Brand = "Ford",
+                    Model = "Mustang"
+                }
             };
             var expectedPagination = new PaginationMeta
             {
@@ -42,7 +53,8 @@ namespace Rent.Tests.Services
                 PageSize = pageSize
             };
 
-            _carRepositoryMock.Setup(repo => repo.GetAllCars(pageNumber, pageSize))
+            _carRepositoryMock
+                .Setup(repo => repo.GetAllCars(pageNumber, pageSize))
                 .ReturnsAsync((expectedCars, expectedPagination));
 
             // Act
@@ -73,8 +85,7 @@ namespace Rent.Tests.Services
                 CreatedAt = DateTime.Now
             };
 
-            _carRepositoryMock.Setup(repo => repo.AddCar(car))
-                             .ReturnsAsync(car);
+            _carRepositoryMock.Setup(repo => repo.AddCar(car)).ReturnsAsync(car);
 
             // Act
             var addedCar = await _carService.AddCar(car);
@@ -92,6 +103,5 @@ namespace Rent.Tests.Services
             Assert.Equal(car.IsDeleted, addedCar.IsDeleted);
             Assert.Equal(car.CreatedAt, addedCar.CreatedAt);
         }
-
     }
 }

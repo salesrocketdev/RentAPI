@@ -2,12 +2,16 @@
 using Rent.Domain.Interfaces;
 using Rent.Domain.Entities;
 using AutoMapper;
-using Rent.API.DTOs;
 using Rent.Core.Models;
+using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
+using Rent.Domain.DTO.Response;
+using Rent.Domain.Interfaces.Services;
 
 namespace Rent.API.Controllers
 {
     [Route("api/v1/[controller]")]
+    [SwaggerTag("Carros")]
     [ApiController]
     public class CarsController : ControllerBase
     {
@@ -21,7 +25,14 @@ namespace Rent.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CarDTO>>> GetAllCars(int pageNumber = 1, int pageSize = 10)
+        [SwaggerOperation(
+            Summary = "Retorna todos os carros cadastrados no sistema.",
+            Description = "Este endpoint retorna uma lista de carros cadastrados no sistema."
+        )]
+        public async Task<ActionResult<List<CarDTO>>> GetAllCars(
+            int pageNumber = 1,
+            int pageSize = 10
+        )
         {
             try
             {
@@ -51,6 +62,10 @@ namespace Rent.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(
+            Summary = "Obter carro por ID.",
+            Description = "Retorna um carro específico com base no seu ID."
+        )]
         public async Task<ActionResult<CarDTO>> GetCarById(int id)
         {
             try
@@ -79,7 +94,9 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner, Employee")]
         [HttpPost]
+        [SwaggerOperation(Summary = "Criar um novo carro.", Description = "Cria um novo carro.")]
         public async Task<ActionResult<CarDTO>> CreateCar(CarDTO carsRequest)
         {
             try
@@ -114,10 +131,14 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner, Employee")]
         [HttpPut]
+        [SwaggerOperation(
+            Summary = "Atualiza um carro existente.",
+            Description = "Atualiza um carro existente."
+        )]
         public async Task<ActionResult<CarDTO>> UpdateCar(CarDTO carsRequest)
         {
-
             try
             {
                 // Mapear a CarDTO para a entidade Car
@@ -150,7 +171,12 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner, Employee")]
         [HttpDelete("{id}")]
+        [SwaggerOperation(
+            Summary = "Remover carro por ID.",
+            Description = "Remove um carro específico com base no seu ID."
+        )]
         public async Task<ActionResult<CarDTO>> DeleteCar(int id)
         {
             try

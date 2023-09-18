@@ -12,42 +12,43 @@ namespace Rent.API.Controllers
 {
     [Authorize]
     [Route("api/v1/[controller]")]
-    [SwaggerTag("Clientes")]
+    [SwaggerTag("Funcionários")]
     [ApiController]
-    public class CustomersController : ControllerBase
+    public class EmployeesController : ControllerBase
     {
-        private readonly ICustomerService _customerService;
+        private readonly IEmployeeService _employeeService;
         private readonly IMapper _mapper;
 
-        public CustomersController(ICustomerService customerService, IMapper mapper)
+        public EmployeesController(IEmployeeService employeeService, IMapper mapper)
         {
-            _customerService = customerService;
+            _employeeService = employeeService;
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpGet]
         [SwaggerOperation(
-            Summary = "Retorna todos os clientes cadastrados no sistema.",
-            Description = "Este endpoint retorna uma lista de clientes cadastrados no sistema."
+            Summary = "Retorna todos os funcionários cadastrados no sistema.",
+            Description = "Este endpoint retorna uma lista de funcionários cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<CustomerDTO>>> GetAllCustomers(
+        public async Task<ActionResult<List<EmployeeDTO>>> GetAllEmployees(
             int pageNumber = 1,
             int pageSize = 10
         )
         {
             try
             {
-                var (customers, pagination) = await _customerService.GetAllCustomers(
+                var (employees, pagination) = await _employeeService.GetAllEmployees(
                     pageNumber,
                     pageSize
                 );
-                List<CustomerDTO> customerDTOs = _mapper.Map<List<CustomerDTO>>(customers);
+                List<EmployeeDTO> employeeDTOs = _mapper.Map<List<EmployeeDTO>>(employees);
 
-                ApiResponse<List<CustomerDTO>> response = new ApiResponse<List<CustomerDTO>>
+                ApiResponse<List<EmployeeDTO>> response = new ApiResponse<List<EmployeeDTO>>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = customerDTOs,
+                    Data = employeeDTOs,
                     Pagination = pagination
                 };
 
@@ -55,7 +56,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<List<CustomerDTO>> response = new ApiResponse<List<CustomerDTO>>
+                ApiResponse<List<EmployeeDTO>> response = new ApiResponse<List<EmployeeDTO>>
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -65,30 +66,31 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner, Employee")]
         [HttpGet("{id}")]
         [SwaggerOperation(
-            Summary = "Obter cliente por ID.",
-            Description = "Retorna um cliente específico com base no seu ID."
+            Summary = "Obter funcionário por ID.",
+            Description = "Retorna um funcionário específico com base no seu ID."
         )]
-        public async Task<ActionResult<CustomerDTO>> GetCustomerById(int id)
+        public async Task<ActionResult<EmployeeDTO>> GetEmployeeById(int id)
         {
             try
             {
-                Customer customer = await _customerService.GetCustomerById(id);
-                CustomerDTO customerDTO = _mapper.Map<CustomerDTO>(customer);
+                Employee employee = await _employeeService.GetEmployeeById(id);
+                EmployeeDTO employeeDTO = _mapper.Map<EmployeeDTO>(employee);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = customerDTO
+                    Data = employeeDTO
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 0,
                     Message = ex.Message
@@ -98,36 +100,37 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpPost]
         [SwaggerOperation(
-            Summary = "Criar um novo cliente.",
-            Description = "Cria um novo cliente."
+            Summary = "Criar um novo funcionário.",
+            Description = "Cria um novo funcionário."
         )]
-        public async Task<ActionResult<CustomerDTO>> CreateCustomer(CustomerDTO customerRequest)
+        public async Task<ActionResult<EmployeeDTO>> CreateEmployee(EmployeeDTO employeeRequest)
         {
             try
             {
                 // Mapear a CarDTO para a entidade Car
-                Customer customer = _mapper.Map<Customer>(customerRequest);
+                Employee employee = _mapper.Map<Employee>(employeeRequest);
 
                 // Adicionar o carro usando o serviço
-                Customer addedCustomer = await _customerService.AddCustomer(customer);
+                Employee addedEmployee = await _employeeService.AddEmployee(employee);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                CustomerDTO addedCustomerDTO = _mapper.Map<CustomerDTO>(addedCustomer);
+                EmployeeDTO addedEmployeeDTO = _mapper.Map<EmployeeDTO>(addedEmployee);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = addedCustomerDTO
+                    Data = addedEmployeeDTO
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -139,34 +142,34 @@ namespace Rent.API.Controllers
 
         [HttpPut]
         [SwaggerOperation(
-            Summary = "Atualiza um cliente existente.",
-            Description = "Atualiza um cliente existente."
+            Summary = "Atualiza um funcionário existente.",
+            Description = "Atualiza um funcionário existente."
         )]
-        public async Task<ActionResult<CustomerDTO>> UpdateCustomer(CustomerDTO customerRequest)
+        public async Task<ActionResult<EmployeeDTO>> UpdateEmployee(EmployeeDTO employeeRequest)
         {
             try
             {
                 // Mapear a CarDTO para a entidade Car
-                Customer customer = _mapper.Map<Customer>(customerRequest);
+                Employee employee = _mapper.Map<Employee>(employeeRequest);
 
                 // Adicionar o carro usando o serviço
-                Customer updatedCustomer = await _customerService.UpdateCustomer(customer);
+                Employee updatedEmployee = await _employeeService.UpdateEmployee(employee);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                CustomerDTO updatedCustomerDTO = _mapper.Map<CustomerDTO>(updatedCustomer);
+                EmployeeDTO updatedEmployeeDTO = _mapper.Map<EmployeeDTO>(updatedEmployee);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 1,
                     Message = "Success.",
-                    Data = updatedCustomerDTO
+                    Data = updatedEmployeeDTO
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -176,18 +179,19 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id}")]
         [SwaggerOperation(
-            Summary = "Remover cliente por ID.",
-            Description = "Remove um cliente específico com base no seu ID."
+            Summary = "Remover funcionário por ID.",
+            Description = "Remove um funcionário específico com base no seu ID."
         )]
-        public async Task<ActionResult<CustomerDTO>> DeleteCustomer(int id)
+        public async Task<ActionResult<EmployeeDTO>> DeleteEmployee(int id)
         {
             try
             {
-                await _customerService.DeleteCustomer(id);
+                await _employeeService.DeleteEmployee(id);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -197,7 +201,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
                 {
                     Code = 0,
                     Message = ex.Message
