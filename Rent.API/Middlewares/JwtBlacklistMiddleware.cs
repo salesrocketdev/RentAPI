@@ -63,7 +63,7 @@ namespace Rent.API.Middlewares
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         // Lidar com exceções de decodificação de token, se necessário
                         context.Response.StatusCode = 401;
