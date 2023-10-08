@@ -1,12 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rent.Domain.Entities;
-using Rent.Infrastructure.Data;
 using Rent.Core.Models;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.Collections.Generic;
+using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {

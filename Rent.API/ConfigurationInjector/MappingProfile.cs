@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Rent.Domain.DTO.Request;
+using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 
@@ -9,6 +10,14 @@ namespace Rent.API.ConfigurationInjector
     {
         public MappingProfile()
         {
+            #region CreateDTO to Model
+            CreateMap<CreateEmployeeDTO, Employee>();
+            #endregion
+
+            #region Model to CreateDTO
+            CreateMap<Employee, CreateEmployeeDTO>();
+            #endregion
+
             #region DTO to Model
             CreateMap<CarDTO, Car>();
             CreateMap<CustomerDTO, Customer>();

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Annotations;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Interfaces.Services;
+using Rent.Domain.DTO.Request.Create;
 
 namespace Rent.API.Controllers
 {
@@ -106,7 +107,7 @@ namespace Rent.API.Controllers
             Summary = "Criar um novo funcionário.",
             Description = "Cria um novo funcionário."
         )]
-        public async Task<ActionResult<EmployeeDTO>> CreateEmployee(EmployeeDTO employeeRequest)
+        public async Task<ActionResult<EmployeeDTO>> CreateEmployee(CreateEmployeeDTO employeeRequest)
         {
             try
             {
@@ -117,9 +118,9 @@ namespace Rent.API.Controllers
                 Employee addedEmployee = await _employeeService.AddEmployee(employee);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                EmployeeDTO addedEmployeeDTO = _mapper.Map<EmployeeDTO>(addedEmployee);
+                CreateEmployeeDTO addedEmployeeDTO = _mapper.Map<CreateEmployeeDTO>(addedEmployee);
 
-                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
+                ApiResponse<CreateEmployeeDTO> response = new ApiResponse<CreateEmployeeDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -130,7 +131,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
+                ApiResponse<CreateEmployeeDTO> response = new ApiResponse<CreateEmployeeDTO>
                 {
                     Code = 0,
                     Message = ex.Message,

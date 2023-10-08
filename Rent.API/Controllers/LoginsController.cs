@@ -101,7 +101,7 @@ namespace Rent.API.Controllers
             }
         }
 
-        [HttpGet("{parent_id}")]
+        [HttpGet("{parentId}")]
         [SwaggerOperation(
             Summary = "Obter login por Parent ID.",
             Description = "Retorna um login específico com base no seu Parent ID."
