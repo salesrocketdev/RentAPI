@@ -24,7 +24,7 @@ namespace Rent.Domain.Services
             return hash;
         }
 
-        public bool VerifyPassword(string password, byte[] storedHash, byte[] salt)
+        public bool VerifyPassword(string password, byte[]? storedHash, byte[]? salt)
         {
             if (password == null)
                 throw new Exception("Erro");

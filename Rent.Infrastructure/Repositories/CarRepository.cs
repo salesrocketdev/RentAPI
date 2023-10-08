@@ -1,12 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Rent.Domain.Entities;
-using Rent.Infrastructure.Data;
 using Rent.Core.Models;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
-using System.Linq;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {
@@ -17,19 +13,16 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize)
         {
-            var totalItems = await _context.Cars
-                .Where(x => x.IsActive == true && x.IsDeleted == false)
-                .CountAsync();
-
             var query = _context.Cars
-                .Where(x => x.IsActive == true && x.IsDeleted == false)
-                .OrderBy(x => x.Id)
+                .Where(x => x.IsActive == true && x.IsDeleted == false);
+
+            int totalItems = query.Count();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            var cars = await query
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-
-            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-
-            var cars = await query.ToListAsync();
+                .Take(pageSize)
+                .ToListAsync();
 
             var pagination = new PaginationMeta
             {

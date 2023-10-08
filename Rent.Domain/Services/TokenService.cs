@@ -19,9 +19,8 @@ namespace Rent.Domain.Services
 
         public string GenerateToken(Login login)
         {
-            byte[] key = Encoding.ASCII.GetBytes(
-                _configuration.GetSection("AppSettings:Secret").Value
-            );
+            var secretKey = _configuration.GetSection("AppSettings:Secret").Value ?? throw new Exception("A configuração 'AppSettings:Secret' não foi definida ou está vazia.");
+            byte[] key = Encoding.ASCII.GetBytes(secretKey);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -36,8 +35,7 @@ namespace Rent.Domain.Services
                         new Claim(ClaimTypes.Role, login.UserType.ToString())
                     }
                 ),
-                //Expires = DateTime.UtcNow.AddHours(1),
-                Expires = DateTime.Now.AddMinutes(3600),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature

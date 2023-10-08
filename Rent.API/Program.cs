@@ -8,9 +8,6 @@ using Rent.Infrastructure.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-byte[] key = Encoding.ASCII.GetBytes(
-    s: builder.Configuration.GetSection("AppSettings:Secret").Value
-);
 
 builder.Services.AddControllers();
 
@@ -45,7 +42,7 @@ builder.Services.AddSwaggerGen(option =>
                         Id = "Bearer"
                     }
                 },
-                new string[] { }
+                Array.Empty<string>()
             }
         }
     );
@@ -62,6 +59,9 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
+        var secretKey = builder.Configuration.GetSection("AppSettings:Secret").Value ?? throw new Exception("A configuração 'AppSettings:Secret' não foi definida ou está vazia.");
+        byte[] key = Encoding.ASCII.GetBytes(secretKey);
+
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
@@ -72,7 +72,6 @@ builder.Services
             ValidateAudience = false,
             //ValidIssuer = "http://localhost:7006/",
             //ValidAudience = "http://localhost:7006/",
-
             ValidateLifetime = true,
         };
     });
@@ -107,8 +106,8 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    var context = services.GetRequiredService<DataContext>();
-    context.Database.Migrate();
+    var dataContext = services.GetRequiredService<DataContext>();
+    dataContext.Database.Migrate();
 
     // Chame o método Seed da classe DataSeeder
     var dataSeeder = services.GetRequiredService<DataSeeder>();
