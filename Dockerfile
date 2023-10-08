@@ -1,3 +1,3 @@
-FROM rent/rentdocker
+FROM ubuntu
 
 EXPOSE 80
