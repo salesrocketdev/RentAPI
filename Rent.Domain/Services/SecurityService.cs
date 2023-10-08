@@ -38,5 +38,19 @@ namespace Rent.Domain.Services
             );
             return CryptographicOperations.FixedTimeEquals(hashToCompare, storedHash);
         }
+
+        public string GenerateRandomPassword(int length)
+        {
+            const string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var passwordChars = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                passwordChars[i] = allowedChars[random.Next(allowedChars.Length)];
+            }
+
+            return new string(passwordChars);
+        }
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.Entities;
-using Rent.Domain.Interfaces;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -16,17 +15,14 @@ namespace Rent.API.Controllers
     [ApiController]
     public class LoginsController : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
         private readonly ILoginService _loginService;
         private readonly IMapper _mapper;
 
         public LoginsController(
-            IAuthenticationService authenticationService,
             ILoginService loginService,
             IMapper mapper
         )
         {
-            _authenticationService = authenticationService;
             _loginService = loginService;
             _mapper = mapper;
         }

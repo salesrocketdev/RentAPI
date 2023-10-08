@@ -20,10 +20,10 @@ namespace Rent.API.ConfigurationInjector
 
             //Services
             services.AddTransient<ICarService, CarService>();
+            services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<ICustomerService, CustomerService>();
             services.AddTransient<IEmployeeService, EmployeeService>();
             services.AddTransient<IOwnerService, OwnerService>();
-            services.AddTransient<ILoginService, LoginService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISecurityService, SecurityService>();

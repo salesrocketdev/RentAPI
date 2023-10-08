@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Rent.Domain.Interfaces;
 using Rent.Domain.Entities;
 using AutoMapper;
 using Rent.Core.Models;
@@ -8,6 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Interfaces.Services;
 using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
 
 namespace Rent.API.Controllers
 {
@@ -146,7 +146,7 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um funcionário existente.",
             Description = "Atualiza um funcionário existente."
         )]
-        public async Task<ActionResult<EmployeeDTO>> UpdateEmployee(EmployeeDTO employeeRequest)
+        public async Task<ActionResult<EmployeeDTO>> UpdateEmployee(UpdateEmployeeDTO employeeRequest)
         {
             try
             {
@@ -157,9 +157,9 @@ namespace Rent.API.Controllers
                 Employee updatedEmployee = await _employeeService.UpdateEmployee(employee);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                EmployeeDTO updatedEmployeeDTO = _mapper.Map<EmployeeDTO>(updatedEmployee);
+                UpdateEmployeeDTO updatedEmployeeDTO = _mapper.Map<UpdateEmployeeDTO>(updatedEmployee);
 
-                ApiResponse<EmployeeDTO> response = new ApiResponse<EmployeeDTO>
+                ApiResponse<UpdateEmployeeDTO> response = new ApiResponse<UpdateEmployeeDTO>
                 {
                     Code = 1,
                     Message = "Success.",

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Rent.Domain.Interfaces;
 using Rent.Domain.Entities;
 using AutoMapper;
 using Rent.Core.Models;
@@ -7,10 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Annotations;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Interfaces.Services;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
 
 namespace Rent.API.Controllers
 {
-    [Authorize]
     [Route("api/v1/[controller]")]
     [SwaggerTag("Clientes")]
     [ApiController]
@@ -25,6 +25,7 @@ namespace Rent.API.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Owner, Employee")]
         [HttpGet]
         [SwaggerOperation(
             Summary = "Retorna todos os clientes cadastrados no sistema.",
@@ -65,6 +66,7 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner, Employee")]
         [HttpGet("{id}")]
         [SwaggerOperation(
             Summary = "Obter cliente por ID.",
@@ -98,12 +100,13 @@ namespace Rent.API.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [SwaggerOperation(
             Summary = "Criar um novo cliente.",
             Description = "Cria um novo cliente."
         )]
-        public async Task<ActionResult<CustomerDTO>> CreateCustomer(CustomerDTO customerRequest)
+        public async Task<ActionResult<CustomerDTO>> CreateCustomer(CreateCustomerDTO customerRequest)
         {
             try
             {
@@ -114,9 +117,9 @@ namespace Rent.API.Controllers
                 Customer addedCustomer = await _customerService.AddCustomer(customer);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                CustomerDTO addedCustomerDTO = _mapper.Map<CustomerDTO>(addedCustomer);
+                CreateCustomerDTO addedCustomerDTO = _mapper.Map<CreateCustomerDTO>(addedCustomer);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<CreateCustomerDTO> response = new ApiResponse<CreateCustomerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -137,12 +140,13 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner, Customer")]
         [HttpPut]
         [SwaggerOperation(
             Summary = "Atualiza um cliente existente.",
             Description = "Atualiza um cliente existente."
         )]
-        public async Task<ActionResult<CustomerDTO>> UpdateCustomer(CustomerDTO customerRequest)
+        public async Task<ActionResult<CustomerDTO>> UpdateCustomer(UpdateCustomerDTO customerRequest)
         {
             try
             {
@@ -153,9 +157,9 @@ namespace Rent.API.Controllers
                 Customer updatedCustomer = await _customerService.UpdateCustomer(customer);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                CustomerDTO updatedCustomerDTO = _mapper.Map<CustomerDTO>(updatedCustomer);
+                UpdateCustomerDTO updatedCustomerDTO = _mapper.Map<UpdateCustomerDTO>(updatedCustomer);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
+                ApiResponse<UpdateCustomerDTO> response = new ApiResponse<UpdateCustomerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -176,6 +180,7 @@ namespace Rent.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id}")]
         [SwaggerOperation(
             Summary = "Remover cliente por ID.",

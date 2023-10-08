@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Rent.Domain.Interfaces;
-using Rent.Domain.Entities;
-using AutoMapper;
-using Rent.Core.Models;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Mvc;
+using Rent.Core.Models;
 using Rent.Domain.DTO.Response;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {

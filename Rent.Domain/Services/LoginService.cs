@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Rent.Core.Models;
+﻿using Rent.Core.Models;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
@@ -8,32 +7,26 @@ namespace Rent.Domain.Services
 {
     public class LoginService : ILoginService
     {
-        private readonly IAuthenticationService _authenticationService;
         private readonly ISecurityService _securityService;
 
         private readonly ICustomerService _customerService;
         private readonly IEmployeeService _employeeService;
         private readonly IOwnerService _ownerService;
         private readonly ILoginRepository _loginRepository;
-        private readonly IMapper _mapper;
 
         public LoginService(
-            IAuthenticationService authenticationService,
             ISecurityService securityService,
             ICustomerService customerService,
             IEmployeeService employeeService,
             IOwnerService ownerService,
-            ILoginRepository loginRepository,
-            IMapper mapper
+            ILoginRepository loginRepository
         )
         {
-            _authenticationService = authenticationService;
             _securityService = securityService;
             _customerService = customerService;
             _employeeService = employeeService;
             _ownerService = ownerService;
             _loginRepository = loginRepository;
-            _mapper = mapper;
         }
 
         public async Task<(List<Login>, PaginationMeta)> GetAllLogins(int pageNumber, int pageSize)
@@ -83,6 +76,8 @@ namespace Rent.Domain.Services
                 login.Email = customer.Email;
             }
 
+            if (login.Password == null) throw new Exception("Senha inválida.");
+        
             var hash = _securityService.HashPassword(login.Password, out var salt);
 
             login.PasswordHash = hash;
