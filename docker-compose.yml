@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  rentapi:
+    image: ${DOCKER_REGISTRY-}rentapi
+    build:
+      context: .
+      dockerfile: RentAPI/Dockerfile
