@@ -7,6 +7,6 @@ namespace Rent.Domain.DTO.Request
         public int ParentId { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
-        public UserType userType { get; set; }
+        public UserType UserType { get; set; }
     }
 }

@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Rent.Domain.Interfaces;
-using Rent.Domain.Entities;
-using AutoMapper;
-using Rent.Core.Models;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Mvc;
+using Rent.Core.Models;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {
@@ -100,7 +101,7 @@ namespace Rent.API.Controllers
             Summary = "Criar um novo administrador.",
             Description = "Cria um novo administrador."
         )]
-        public async Task<ActionResult<OwnerDTO>> CreateOwner(OwnerDTO ownerRequest)
+        public async Task<ActionResult<OwnerDTO>> CreateOwner(CreateOwnerDTO ownerRequest)
         {
             try
             {
@@ -111,9 +112,9 @@ namespace Rent.API.Controllers
                 Owner addedOwner = await _ownerService.AddOwner(owner);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                OwnerDTO addedOwnerDTO = _mapper.Map<OwnerDTO>(addedOwner);
+                CreateOwnerDTO addedOwnerDTO = _mapper.Map<CreateOwnerDTO>(addedOwner);
 
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<CreateOwnerDTO> response = new ApiResponse<CreateOwnerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -139,7 +140,7 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um administrador existente.",
             Description = "Atualiza um administrador existente."
         )]
-        public async Task<ActionResult<OwnerDTO>> UpdateOwner(OwnerDTO ownerRequest)
+        public async Task<ActionResult<OwnerDTO>> UpdateOwner(UpdateOwnerDTO ownerRequest)
         {
             try
             {
@@ -150,9 +151,9 @@ namespace Rent.API.Controllers
                 Owner updatedOwner = await _ownerService.UpdateOwner(owner);
 
                 // Mapear o carro adicionado de volta para CarDTO
-                OwnerDTO updatedOwnerDTO = _mapper.Map<OwnerDTO>(updatedOwner);
+                UpdateOwnerDTO updatedOwnerDTO = _mapper.Map<UpdateOwnerDTO>(updatedOwner);
 
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<UpdateOwnerDTO> response = new ApiResponse<UpdateOwnerDTO>
                 {
                     Code = 1,
                     Message = "Success.",
