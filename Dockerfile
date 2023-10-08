@@ -1,8 +1,8 @@
 # Usar a imagem base ASP.NET Core
+FROM salesrocketdev/rent
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
 
 # Usar a imagem base do SDK do .NET Core para construção
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
