@@ -1,4 +1,3 @@
-FROM ubuntu
+FROM rent/rentdocker
 
 EXPOSE 80
-CMD ["<command>"]
