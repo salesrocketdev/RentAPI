@@ -136,13 +136,10 @@ namespace Rent.API.Controllers
         {
             try
             {
-                // Mapear a LoginDTO para a entidade Login
                 Login login = _mapper.Map<Login>(loginRequest);
 
-                // Adicionar o login usando o serviço
                 Login addedLogin = await _loginService.AddLogin(login);
 
-                // Mapear o login adicionado de volta para LoginDTO
                 LoginRequest loginRequestDTO = _mapper.Map<LoginRequest>(addedLogin);
 
                 ApiResponse<LoginRequest> response = new ApiResponse<LoginRequest>
@@ -175,13 +172,10 @@ namespace Rent.API.Controllers
         {
             try
             {
-                // Mapear a CarDTO para a entidade Car
                 Login login = _mapper.Map<Login>(loginRequest);
 
-                // Adicionar o carro usando o serviço
                 Login updatedLogin = await _loginService.UpdateLogin(login);
 
-                // Mapear o carro adicionado de volta para CarDTO
                 LoginDTO updatedLoginDTO = _mapper.Map<LoginDTO>(updatedLogin);
 
                 ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>

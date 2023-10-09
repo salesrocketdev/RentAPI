@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
@@ -96,20 +98,17 @@ namespace Rent.API.Controllers
         [Authorize(Roles = "Owner, Employee")]
         [HttpPost]
         [SwaggerOperation(Summary = "Criar um novo carro.", Description = "Cria um novo carro.")]
-        public async Task<ActionResult<CarDTO>> CreateCar(CarDTO carsRequest)
+        public async Task<ActionResult<CreateCarDTO>> CreateCar(CreateCarDTO carsRequest)
         {
             try
             {
-                // Mapear a CarDTO para a entidade Car
                 Car cars = _mapper.Map<Car>(carsRequest);
 
-                // Adicionar o carro usando o serviço
                 Car addedCars = await _carService.AddCar(cars);
 
-                // Mapear o carro adicionado de volta para CarDTO
-                CarDTO addedCarDTO = _mapper.Map<CarDTO>(addedCars);
+                CreateCarDTO addedCarDTO = _mapper.Map<CreateCarDTO>(addedCars);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<CreateCarDTO> response = new ApiResponse<CreateCarDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -136,20 +135,17 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um carro existente.",
             Description = "Atualiza um carro existente."
         )]
-        public async Task<ActionResult<CarDTO>> UpdateCar(CarDTO carsRequest)
+        public async Task<ActionResult<CarDTO>> UpdateCar(UpdateCarDTO carsRequest)
         {
             try
             {
-                // Mapear a CarDTO para a entidade Car
                 Car cars = _mapper.Map<Car>(carsRequest);
 
-                // Adicionar o carro usando o serviço
                 Car updatedCars = await _carService.UpdateCar(cars);
 
-                // Mapear o carro adicionado de volta para CarDTO
-                CarDTO updatedCarDTO = _mapper.Map<CarDTO>(updatedCars);
+                UpdateCarDTO updatedCarDTO = _mapper.Map<UpdateCarDTO>(updatedCars);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<UpdateCarDTO> response = new ApiResponse<UpdateCarDTO>
                 {
                     Code = 1,
                     Message = "Success.",
@@ -160,7 +156,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
+                ApiResponse<UpdateCarDTO> response = new ApiResponse<UpdateCarDTO>
                 {
                     Code = 0,
                     Message = ex.Message,

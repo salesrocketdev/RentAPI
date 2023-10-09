@@ -11,7 +11,11 @@ namespace Rent.Domain.Services
         private readonly ILoginRepository _loginRepository;
         private readonly ICustomerRepository _customerRepository;
 
-        public CustomerService(ISecurityService securityService, ILoginRepository loginRepository, ICustomerRepository customerRepository)
+        public CustomerService(
+            ISecurityService securityService,
+            ILoginRepository loginRepository,
+            ICustomerRepository customerRepository
+        )
         {
             _securityService = securityService;
             _loginRepository = loginRepository;
@@ -33,21 +37,21 @@ namespace Rent.Domain.Services
 
         public async Task<Customer> AddCustomer(Customer customer)
         {
-
             var password = _securityService.GenerateRandomPassword(8);
             var hash = _securityService.HashPassword(password, out var salt);
 
             var customerResult = await _customerRepository.AddCustomer(customer);
 
-            Login login = new()
-            {
-                Email = customer.Email,
-                UserType = Domain.Enums.UserType.Customer,
-                ParentId = customerResult.Id,
-                PasswordHash = hash,
-                PasswordSalt = salt,
-                CreatedAt = DateTime.UtcNow
-            };
+            Login login =
+                new()
+                {
+                    Email = customer.Email,
+                    UserType = Domain.Enums.UserType.Customer,
+                    ParentId = customerResult.Id,
+                    PasswordHash = hash,
+                    PasswordSalt = salt,
+                    CreatedAt = DateTime.UtcNow
+                };
 
             await _loginRepository.AddLogin(login);
             return customerResult;
