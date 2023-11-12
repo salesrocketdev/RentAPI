@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Rent.Domain.Entities;
-using AutoMapper;
-using Rent.Core.Models;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Annotations;
-using Rent.Domain.DTO.Response;
-using Rent.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Mvc;
+using Rent.Core.Models;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
-using Rent.Domain.Services;
+using Rent.Domain.DTO.Response;
+using Rent.Domain.Entities;
+using Rent.Domain.Interfaces.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {
@@ -141,8 +140,8 @@ namespace Rent.API.Controllers
 
         [HttpPut]
         [SwaggerOperation(
-            Summary = "Atualiza um funcionário existente.",
-            Description = "Atualiza um funcionário existente."
+            Summary = "Atualiza um aluguel existente.",
+            Description = "Atualiza um aluguel existente."
         )]
         public async Task<ActionResult<RentalDTO>> UpdateRental(UpdateRentalDTO rentalRequest)
         {

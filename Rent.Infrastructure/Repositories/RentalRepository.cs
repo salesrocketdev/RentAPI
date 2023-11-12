@@ -14,9 +14,10 @@ public class RentalRepository : BaseRepository, IRentalRepository
 
     public async Task<(List<Rental>, PaginationMeta)> GetAllRentals(int pageNumber, int pageSize)
     {
-        var query = _context.Rentals
+        var query = _context
+            .Rentals
             .Include(x => x.Customer)
-                .ThenInclude(c => c.Document)
+            .ThenInclude(c => c.Document)
             .Include(x => x.Car)
             .Where(x => x.IsActive == true && x.IsDeleted == false);
 
@@ -38,9 +39,10 @@ public class RentalRepository : BaseRepository, IRentalRepository
 
     public async Task<Rental> GetRentalById(int id)
     {
-        Rental? customer = await _context.Rentals
+        Rental? customer = await _context
+            .Rentals
             .Include(x => x.Customer)
-                .ThenInclude(c => c.Document)
+            .ThenInclude(c => c.Document)
             .Include(x => x.Car)
             .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
             .FirstOrDefaultAsync();
