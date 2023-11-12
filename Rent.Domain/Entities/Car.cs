@@ -1,6 +1,6 @@
-﻿using Rent.Core.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Rent.Core.Models;
 
 namespace Rent.Domain.Entities
 {
@@ -21,9 +21,10 @@ namespace Rent.Domain.Entities
         [Required(ErrorMessage = "O placa do carro é obrigatória.")]
         public string? Plate { get; set; }
 
-        [Required(ErrorMessage = "O valor do carro é obrigatório.")]
+        [Required(ErrorMessage = "O valor da diária do carro é obrigatório.")]
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal Value { get; set; }
+        public decimal DailyValue { get; set; }
+
         public bool Available { get; set; }
     }
 }

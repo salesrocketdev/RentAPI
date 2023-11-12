@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rent.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using Rent.Infrastructure.Data;
 namespace Rent.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231112083027_AdjustCarValueField")]
+    partial class AdjustCarValueField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,7 +75,7 @@ namespace Rent.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cars", (string)null);
+                    b.ToTable("Cars");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.Customer", b =>
@@ -116,7 +119,7 @@ namespace Rent.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.Document", b =>
@@ -159,7 +162,7 @@ namespace Rent.Infrastructure.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.Employee", b =>
@@ -203,7 +206,7 @@ namespace Rent.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.Login", b =>
@@ -246,7 +249,7 @@ namespace Rent.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Logins", (string)null);
+                    b.ToTable("Logins");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.Owner", b =>
@@ -290,7 +293,7 @@ namespace Rent.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Owners", (string)null);
+                    b.ToTable("Owners");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.Rental", b =>
@@ -331,7 +334,7 @@ namespace Rent.Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Rentals", (string)null);
+                    b.ToTable("Rentals");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.RevokedToken", b =>
@@ -363,7 +366,7 @@ namespace Rent.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RevokedTokens", (string)null);
+                    b.ToTable("RevokedTokens");
                 });
 
             modelBuilder.Entity("Rent.Domain.Entities.Document", b =>
