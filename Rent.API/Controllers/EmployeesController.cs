@@ -111,13 +111,10 @@ namespace Rent.API.Controllers
         {
             try
             {
-                // Mapear a CarDTO para a entidade Car
                 Employee employee = _mapper.Map<Employee>(employeeRequest);
 
-                // Adicionar o carro usando o serviço
                 Employee addedEmployee = await _employeeService.AddEmployee(employee);
 
-                // Mapear o carro adicionado de volta para CarDTO
                 CreateEmployeeDTO addedEmployeeDTO = _mapper.Map<CreateEmployeeDTO>(addedEmployee);
 
                 ApiResponse<CreateEmployeeDTO> response = new ApiResponse<CreateEmployeeDTO>
@@ -150,13 +147,10 @@ namespace Rent.API.Controllers
         {
             try
             {
-                // Mapear a CarDTO para a entidade Car
                 Employee employee = _mapper.Map<Employee>(employeeRequest);
 
-                // Adicionar o carro usando o serviço
                 Employee updatedEmployee = await _employeeService.UpdateEmployee(employee);
 
-                // Mapear o carro adicionado de volta para CarDTO
                 UpdateEmployeeDTO updatedEmployeeDTO = _mapper.Map<UpdateEmployeeDTO>(updatedEmployee);
 
                 ApiResponse<UpdateEmployeeDTO> response = new ApiResponse<UpdateEmployeeDTO>

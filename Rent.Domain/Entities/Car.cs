@@ -25,6 +25,7 @@ namespace Rent.Domain.Entities
         [Column(TypeName = "decimal(18, 2)")]
         public decimal DailyValue { get; set; }
 
+        [Required(ErrorMessage = "A disponibilidade do carro é obrigatória.")]
         public bool Available { get; set; }
     }
 }

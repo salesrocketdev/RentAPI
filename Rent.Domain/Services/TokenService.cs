@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Rent.Domain.Services
 {
@@ -19,7 +19,11 @@ namespace Rent.Domain.Services
 
         public string GenerateToken(Login login)
         {
-            var secretKey = _configuration.GetSection("AppSettings:Secret").Value ?? throw new Exception("A configuração 'AppSettings:Secret' não foi definida ou está vazia.");
+            var secretKey =
+                _configuration.GetSection("AppSettings:Secret").Value
+                ?? throw new Exception(
+                    "A configuração 'AppSettings:Secret' não foi definida ou está vazia."
+                );
             byte[] key = Encoding.ASCII.GetBytes(secretKey);
 
             var tokenHandler = new JwtSecurityTokenHandler();

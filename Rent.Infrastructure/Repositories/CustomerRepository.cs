@@ -3,7 +3,6 @@ using Rent.Core.Models;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Infrastructure.Data;
-using System;
 
 namespace Rent.Infrastructure.Repositories
 {

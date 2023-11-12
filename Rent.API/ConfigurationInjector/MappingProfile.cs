@@ -14,21 +14,29 @@ namespace Rent.API.ConfigurationInjector
             #region CreateDTO to Model
             CreateMap<CreateEmployeeDTO, Employee>();
             CreateMap<CreateCustomerDTO, Customer>();
+            CreateMap<CreateOwnerDTO, Owner>();
+            CreateMap<CreateRentalDTO, Rental>();
             #endregion
 
             #region Model to CreateDTO
             CreateMap<Employee, CreateEmployeeDTO>();
             CreateMap<Customer, CreateCustomerDTO>();
+            CreateMap<Owner, CreateOwnerDTO>();
+            CreateMap<Rental, CreateRentalDTO>();
             #endregion
 
             #region UpdateDTO to Model
             CreateMap<UpdateEmployeeDTO, Employee>();
             CreateMap<UpdateCustomerDTO, Customer>();
+            CreateMap<UpdateOwnerDTO, Owner>();
+            CreateMap<UpdateRentalDTO, Rental>();
             #endregion
 
             #region Model to UpdateDTO
             CreateMap<Employee, UpdateEmployeeDTO>();
             CreateMap<Customer, UpdateCustomerDTO>();
+            CreateMap<Owner,  UpdateOwnerDTO>();
+            CreateMap<Rental, UpdateRentalDTO>();
             #endregion
 
             #region DTO to Model
@@ -36,6 +44,7 @@ namespace Rent.API.ConfigurationInjector
             CreateMap<CustomerDTO, Customer>();
             CreateMap<EmployeeDTO, Employee>();
             CreateMap<OwnerDTO, Owner>();
+            CreateMap<RentalDTO, Rental>();
             CreateMap<DocumentDTO, Document>();
             CreateMap<LoginRequest, Login>();
             CreateMap<LoginDTO, Login>();
@@ -47,6 +56,7 @@ namespace Rent.API.ConfigurationInjector
             CreateMap<Customer, CustomerDTO>();
             CreateMap<Employee, EmployeeDTO>();
             CreateMap<Owner, OwnerDTO>();
+            CreateMap<Rental, RentalDTO>();
             CreateMap<Document, DocumentDTO>();
             CreateMap<Login, LoginRequest>();
             CreateMap<Login, LoginDTO>();

@@ -13,16 +13,12 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize)
         {
-            var query = _context.Cars
-                .Where(x => x.IsActive == true && x.IsDeleted == false);
+            var query = _context.Cars.Where(x => x.IsActive == true && x.IsDeleted == false);
 
             int totalItems = query.Count();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            var cars = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            var cars = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
             var pagination = new PaginationMeta
             {
@@ -58,6 +54,7 @@ namespace Rent.Infrastructure.Repositories
             query.Color = car.Color;
             query.Model = car.Model;
             query.Plate = car.Plate;
+            query.DailyValue = car.DailyValue;
             query.Year = car.Year;
 
             await _context.SaveChangesAsync();
