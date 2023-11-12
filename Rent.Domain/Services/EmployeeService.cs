@@ -1,7 +1,7 @@
-﻿using Rent.Domain.Interfaces.Repositories;
-using Rent.Domain.Interfaces.Services;
+﻿using Rent.Core.Models;
 using Rent.Domain.Entities;
-using Rent.Core.Models;
+using Rent.Domain.Interfaces.Repositories;
+using Rent.Domain.Interfaces.Services;
 
 namespace Rent.Domain.Services
 {
@@ -34,7 +34,7 @@ namespace Rent.Domain.Services
 
         public async Task<Employee> UpdateEmployee(Employee employee)
         {
-            return await _employeeRepository.AddEmployee(employee);
+            return await _employeeRepository.UpdateEmployee(employee);
         }
 
         public async Task DeleteEmployee(int id)
