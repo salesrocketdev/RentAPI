@@ -1,4 +1,6 @@
-﻿namespace Rent.Domain.DTO.Request.Update
+﻿using Rent.Domain.DTO.Response;
+
+namespace Rent.Domain.DTO.Request.Update
 {
     public class UpdateCustomerDTO
     {
@@ -8,5 +10,6 @@
         public string? Address { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
+        public DocumentDTO? Document { get; set; }
     }
 }
