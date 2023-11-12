@@ -18,6 +18,7 @@ public class RentalRepository : BaseRepository, IRentalRepository
             .Rentals
             .Include(x => x.Customer)
             .ThenInclude(c => c.Document)
+            .Include(x => x.Employee)
             .Include(x => x.Car)
             .Where(x => x.IsActive == true && x.IsDeleted == false);
 
@@ -43,6 +44,7 @@ public class RentalRepository : BaseRepository, IRentalRepository
             .Rentals
             .Include(x => x.Customer)
             .ThenInclude(c => c.Document)
+            .Include(x => x.Employee)
             .Include(x => x.Car)
             .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
             .FirstOrDefaultAsync();
