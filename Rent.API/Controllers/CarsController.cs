@@ -95,7 +95,7 @@ namespace Rent.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Owner, Employee")]
+        // [Authorize(Roles = "Owner, Employee")]
         [HttpPost]
         [SwaggerOperation(Summary = "Criar um novo carro.", Description = "Cria um novo carro.")]
         public async Task<ActionResult<CreateCarDTO>> CreateCar(CreateCarDTO carsRequest)
@@ -129,7 +129,7 @@ namespace Rent.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Owner, Employee")]
+        // [Authorize(Roles = "Owner, Employee")]
         [HttpPut]
         [SwaggerOperation(
             Summary = "Atualiza um carro existente.",
@@ -166,7 +166,7 @@ namespace Rent.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Owner, Employee")]
+        // [Authorize(Roles = "Owner, Employee")]
         [HttpDelete("{id}")]
         [SwaggerOperation(
             Summary = "Remover carro por ID.",
