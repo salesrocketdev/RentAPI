@@ -82,16 +82,20 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-// builder.Services.AddCors(
-//     options =>
-//         options.AddPolicy(
-//             name: "RentOrigins",
-//             policy =>
-//             {
-//                 policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
-//             }
-//         )
-// );
+builder.Services.AddCors(
+    options =>
+        options.AddPolicy(
+            name: "RentOrigins",
+            policy =>
+            {
+                policy
+                AllowAnyOrigin()
+                // .WithOrigins("http://localhost:4200")
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            }
+        )
+);
 
 var app = builder.Build();
 
@@ -118,7 +122,7 @@ using (var scope = app.Services.CreateScope())
     dataSeeder.Seed();
 }
 
-// app.UseCors("RentOrigins");
+app.UseCors("RentOrigins");
 
 app.UseHttpsRedirection();
 
