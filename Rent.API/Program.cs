@@ -128,7 +128,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.UseMiddleware<JwtBlacklistMiddleware>();
+app.UseMiddleware<JwtBlacklistMiddleware>();
 
 app.MapControllers();
 
