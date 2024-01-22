@@ -13,16 +13,11 @@ namespace Rent.Infrastructure.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             if (!options.IsConfigured)
-            {
-                // options.UseSqlServer(
-                //     "Server=localhost,1433;Database=Rent;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=True"
-                // );
-
                 options.UseSqlServer("workstation id=RentDatabase.mssql.somee.com;packet size=4096;user id=salesrocketdev_SQLLogin_1;pwd=iwb7i1abem;data source=RentDatabase.mssql.somee.com;persist security info=False;initial catalog=RentDatabase;TrustServerCertificate=True");
-            }
+            
         }
-
         public DbSet<Car> Cars => Set<Car>();
+        public DbSet<CarImage> CarImages => Set<CarImage>();
         public DbSet<Login> Logins => Set<Login>();
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<RevokedToken> RevokedTokens => Set<RevokedToken>();
