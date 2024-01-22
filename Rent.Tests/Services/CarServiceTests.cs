@@ -79,7 +79,7 @@ namespace Rent.Tests.Services
                 Year = 2022,
                 Plate = "ABC123",
                 Available = true,
-                Value = 350,
+                DailyValue = 100,
                 IsActive = true,
                 IsDeleted = false,
                 CreatedAt = DateTime.Now
@@ -98,7 +98,7 @@ namespace Rent.Tests.Services
             Assert.Equal(car.Year, addedCar.Year);
             Assert.Equal(car.Plate, addedCar.Plate);
             Assert.Equal(car.Available, addedCar.Available);
-            Assert.Equal(car.Value, addedCar.Value);
+            Assert.Equal(car.DailyValue, addedCar.DailyValue);
             Assert.Equal(car.IsActive, addedCar.IsActive);
             Assert.Equal(car.IsDeleted, addedCar.IsDeleted);
             Assert.Equal(car.CreatedAt, addedCar.CreatedAt);
