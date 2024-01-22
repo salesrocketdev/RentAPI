@@ -27,5 +27,8 @@ namespace Rent.Domain.Entities
 
         [Required(ErrorMessage = "A disponibilidade do carro é obrigatória.")]
         public bool Available { get; set; }
+
+        // Navigation properties
+        public List<CarImage?>? CarImages { get; set; }
     }
 }

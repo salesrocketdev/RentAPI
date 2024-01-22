@@ -9,6 +9,5 @@
         public string? Plate { get; set; }
         public decimal DailyValue { get; set; }
         public bool Available { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
