@@ -13,7 +13,10 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize)
         {
-            var query = _context.Cars.Where(x => x.IsActive == true && x.IsDeleted == false);
+            var query = _context
+                .Cars
+                .Include(x => x.CarImages)
+                .Where(x => x.IsActive == true && x.IsDeleted == false);
 
             int totalItems = query.Count();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);

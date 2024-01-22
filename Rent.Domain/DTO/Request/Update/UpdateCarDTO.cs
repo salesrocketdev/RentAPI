@@ -10,6 +10,5 @@
         public string? Plate { get; set; }
         public decimal DailyValue { get; set; }
         public bool Available { get; set; }
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }
