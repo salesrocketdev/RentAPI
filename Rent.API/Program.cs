@@ -116,7 +116,6 @@ using (var scope = app.Services.CreateScope())
     var dataContext = services.GetRequiredService<DataContext>();
     dataContext.Database.Migrate();
 
-    // Chame o método Seed da classe DataSeeder
     var dataSeeder = services.GetRequiredService<DataSeeder>();
     dataSeeder.Seed();
 }
