@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Domain;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
@@ -40,23 +41,20 @@ namespace Rent.API.Controllers
                 var (cars, pagination) = await _carService.GetAllCars(pageNumber, pageSize);
                 List<CarDTO> carsDTOs = _mapper.Map<List<CarDTO>>(cars);
 
-                ApiResponse<List<CarDTO>> response = new ApiResponse<List<CarDTO>>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = carsDTOs,
-                    Pagination = pagination
-                };
+                ApiResponse<List<CarDTO>> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = carsDTOs,
+                        Pagination = pagination
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<CarDTO>> response = new ApiResponse<List<CarDTO>>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<List<CarDTO>> response = new() { Code = 0, Message = ex.Message, };
 
                 return Ok(response);
             }
@@ -74,22 +72,19 @@ namespace Rent.API.Controllers
                 Car car = await _carService.GetCarById(id);
                 CarDTO carDTO = _mapper.Map<CarDTO>(car);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = carDTO
-                };
+                ApiResponse<CarDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = carDTO
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiResponse<CarDTO> response = new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }
@@ -108,22 +103,19 @@ namespace Rent.API.Controllers
 
                 CreateCarDTO addedCarDTO = _mapper.Map<CreateCarDTO>(addedCars);
 
-                ApiResponse<CreateCarDTO> response = new ApiResponse<CreateCarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = addedCarDTO
-                };
+                ApiResponse<CreateCarDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = addedCarDTO
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<CarDTO> response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -145,22 +137,19 @@ namespace Rent.API.Controllers
 
                 UpdateCarDTO updatedCarDTO = _mapper.Map<UpdateCarDTO>(updatedCars);
 
-                ApiResponse<UpdateCarDTO> response = new ApiResponse<UpdateCarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = updatedCarDTO
-                };
+                ApiResponse<UpdateCarDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = updatedCarDTO
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<UpdateCarDTO> response = new ApiResponse<UpdateCarDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<UpdateCarDTO> response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -178,21 +167,13 @@ namespace Rent.API.Controllers
             {
                 await _carService.DeleteCar(id);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                };
+                ApiResponse<CarDTO> response = new() { Code = 1, Message = "Success.", };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiResponse<CarDTO> response = new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }

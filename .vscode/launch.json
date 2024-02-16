@@ -32,7 +32,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/Rent.API/bin/Debug/net6.0/linux-x64/Rent.API.dll",
+      "program": "${workspaceFolder}/Rent.API/bin/Debug/net7.0/Rent.API.dll",
       "args": [],
       "cwd": "${workspaceFolder}/Rent.API",
       "stopAtEntry": false,

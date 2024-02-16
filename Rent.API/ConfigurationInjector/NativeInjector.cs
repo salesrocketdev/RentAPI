@@ -14,6 +14,17 @@ namespace Rent.API.ConfigurationInjector
         public static void RegisterService(this IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IImageStorageRepository>(provider =>
+            {
+                // var configuration = provider.GetRequiredService<IConfiguration>();
+                // var supabaseUrl = configuration["Supabase:Url"];
+                // var supabaseKey = configuration["Supabase:Key"];
+
+                return new SupabaseStorageService(
+                    "https://nlkthtktgjaogtfqqggb.supabase.co",
+                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sa3RodGt0Z2phb2d0ZnFxZ2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDgwNTA3NjIsImV4cCI6MjAyMzYyNjc2Mn0.HXND__PxDfiFZ_xxRAD6kk0QRviPNIMZgl9SKC5dmn4"
+                );
+            });
 
             //Data Seeders
             services.AddTransient<DataSeeder>();
@@ -22,6 +33,7 @@ namespace Rent.API.ConfigurationInjector
 
             //Services
             services.AddTransient<ICarService, CarService>();
+            services.AddTransient<IImageStorageService, ImageStorageService>();
             services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<ICustomerService, CustomerService>();
             services.AddTransient<IEmployeeService, EmployeeService>();

@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -5,7 +6,6 @@ using Microsoft.OpenApi.Models;
 using Rent.API.ConfigurationInjector;
 using Rent.API.Middlewares;
 using Rent.Infrastructure.Data;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,15 +51,19 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.RegisterService();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services
-    .AddAuthentication(options =>
+builder
+    .Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options =>
     {
-        var secretKey = builder.Configuration.GetSection("AppSettings:Secret").Value ?? throw new Exception("A configuração 'AppSettings:Secret' não foi definida ou está vazia.");
+        var secretKey =
+            builder.Configuration.GetSection("AppSettings:Secret").Value
+            ?? throw new Exception(
+                "A configuração 'AppSettings:Secret' não foi definida ou está vazia."
+            );
         byte[] key = Encoding.ASCII.GetBytes(secretKey);
 
         options.RequireHttpsMetadata = false;
@@ -82,18 +86,14 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-builder.Services.AddCors(
-    options =>
-        options.AddPolicy(
-            name: "RentOrigins",
-            policy =>
-            {
-                policy
-                .WithOrigins("http://localhost:4200")
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-            }
-        )
+builder.Services.AddCors(options =>
+    options.AddPolicy(
+        name: "RentOrigins",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+        }
+    )
 );
 
 var app = builder.Build();
@@ -107,7 +107,6 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
 
 using (var scope = app.Services.CreateScope())
 {
