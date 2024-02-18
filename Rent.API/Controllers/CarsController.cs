@@ -115,7 +115,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new() { Code = 0, Message = ex.Message, };
+                ApiResponse<CreateCarDTO> response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -127,7 +127,7 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um carro existente.",
             Description = "Atualiza um carro existente."
         )]
-        public async Task<ActionResult<CarDTO>> UpdateCar(UpdateCarDTO carsRequest)
+        public async Task<ActionResult<UpdateCarDTO>> UpdateCar(UpdateCarDTO carsRequest)
         {
             try
             {
@@ -150,6 +150,38 @@ namespace Rent.API.Controllers
             catch (Exception ex)
             {
                 ApiResponse<UpdateCarDTO> response = new() { Code = 0, Message = ex.Message, };
+
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("{carId}/Image")]
+        public async Task<ActionResult> AddCarImage(int carId, IFormFile imageFile)
+        {
+            try
+            {
+                if (imageFile == null || imageFile.Length == 0)
+                    return BadRequest("Arquivo de imagem inválido");
+
+                Car car = await _carService.GetCarById(carId);
+
+                var tempFilePath = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    imageFile.FileName
+                );
+
+                using (var stream = System.IO.File.Create(tempFilePath))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                await _carService.UploadImage(car.Id, tempFilePath);
+
+                return Ok("Imagem salva com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                ApiResponse<CarDTO> response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
