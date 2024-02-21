@@ -13,7 +13,13 @@ namespace Rent.API.ConfigurationInjector
     {
         public static void RegisterService(this IServiceCollection services)
         {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IBlobStorageRepository>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var connectionString = configuration.GetConnectionString("AzureBlobStorage");
+
+                return new BlobStorageRepository(connectionString);
+            });
 
             //Data Seeders
             services.AddTransient<DataSeeder>();
@@ -27,16 +33,19 @@ namespace Rent.API.ConfigurationInjector
             services.AddTransient<IEmployeeService, EmployeeService>();
             services.AddTransient<IOwnerService, OwnerService>();
             services.AddTransient<IRentalService, RentalService>();
+
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<ISecurityService, SecurityService>();
 
             //Repositories
             services.AddScoped<ICarRepository, CarRepository>();
+            services.AddScoped<ICarImageRepository, CarImageRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IOwnerRepository, OwnerRepository>();
             services.AddScoped<IRentalRepository, RentalRepository>();
+
             services.AddScoped<ILoginRepository, LoginRepository>();
             services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
         }

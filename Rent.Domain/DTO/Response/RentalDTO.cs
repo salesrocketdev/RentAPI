@@ -13,7 +13,7 @@ public class RentalDTO
     public DateTime? UpdatedAt { get; set; }
 
     // Navigation properties
-    public CarDTO? Car { get; set; }
-    public EmployeeDTO? Employee { get; set; }
-    public CustomerDTO? Customer { get; set; }
+    public ResponseCarDTO? Car { get; set; }
+    public ResponseEmployeeDTO? Employee { get; set; }
+    public ResponseCustomerDTO? Customer { get; set; }
 }

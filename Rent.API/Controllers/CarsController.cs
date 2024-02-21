@@ -30,7 +30,7 @@ namespace Rent.API.Controllers
             Summary = "Retorna todos os carros cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de carros cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<CarDTO>>> GetAllCars(
+        public async Task<ActionResult<List<ResponseCarDTO>>> GetAllCars(
             int pageNumber = 1,
             int pageSize = 10
         )
@@ -38,25 +38,23 @@ namespace Rent.API.Controllers
             try
             {
                 var (cars, pagination) = await _carService.GetAllCars(pageNumber, pageSize);
-                List<CarDTO> carsDTOs = _mapper.Map<List<CarDTO>>(cars);
+                List<ResponseCarDTO> carsDTOs = _mapper.Map<List<ResponseCarDTO>>(cars);
 
-                ApiResponse<List<CarDTO>> response = new ApiResponse<List<CarDTO>>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = carsDTOs,
-                    Pagination = pagination
-                };
+                ApiResponse<List<ResponseCarDTO>> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = carsDTOs,
+                        Pagination = pagination
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<CarDTO>> response = new ApiResponse<List<CarDTO>>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<List<ResponseCarDTO>> response =
+                    new() { Code = 0, Message = ex.Message, };
 
                 return Ok(response);
             }
@@ -67,29 +65,25 @@ namespace Rent.API.Controllers
             Summary = "Obter carro por ID.",
             Description = "Retorna um carro específico com base no seu ID."
         )]
-        public async Task<ActionResult<CarDTO>> GetCarById(int id)
+        public async Task<ActionResult<ResponseCarDTO>> GetCarById(int id)
         {
             try
             {
                 Car car = await _carService.GetCarById(id);
-                CarDTO carDTO = _mapper.Map<CarDTO>(car);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = carDTO
-                };
+                ApiResponse<ResponseCarDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = _mapper.Map<ResponseCarDTO>(car)
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }
@@ -98,32 +92,27 @@ namespace Rent.API.Controllers
         [Authorize(Roles = "Owner, Employee")]
         [HttpPost]
         [SwaggerOperation(Summary = "Criar um novo carro.", Description = "Cria um novo carro.")]
-        public async Task<ActionResult<CreateCarDTO>> CreateCar(CreateCarDTO carsRequest)
+        public async Task<ActionResult<ResponseCarDTO>> CreateCar(CreateCarDTO createCarDTO)
         {
             try
             {
-                Car cars = _mapper.Map<Car>(carsRequest);
+                Car mappedCar = _mapper.Map<Car>(createCarDTO);
 
-                Car addedCars = await _carService.AddCar(cars);
+                Car createdCar = await _carService.AddCar(mappedCar);
 
-                CreateCarDTO addedCarDTO = _mapper.Map<CreateCarDTO>(addedCars);
-
-                ApiResponse<CreateCarDTO> response = new ApiResponse<CreateCarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = addedCarDTO
-                };
+                ApiResponse<ResponseCarDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = _mapper.Map<ResponseCarDTO>(createdCar)
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<object> response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -135,32 +124,63 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um carro existente.",
             Description = "Atualiza um carro existente."
         )]
-        public async Task<ActionResult<CarDTO>> UpdateCar(UpdateCarDTO carsRequest)
+        public async Task<ActionResult<ResponseCarDTO>> UpdateCar(UpdateCarDTO updateCarDTO)
         {
             try
             {
-                Car cars = _mapper.Map<Car>(carsRequest);
+                Car mappedCar = _mapper.Map<Car>(updateCarDTO);
 
-                Car updatedCars = await _carService.UpdateCar(cars);
+                Car updatedCar = await _carService.UpdateCar(mappedCar);
 
-                UpdateCarDTO updatedCarDTO = _mapper.Map<UpdateCarDTO>(updatedCars);
-
-                ApiResponse<UpdateCarDTO> response = new ApiResponse<UpdateCarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = updatedCarDTO
-                };
+                ApiResponse<ResponseCarDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = _mapper.Map<ResponseCarDTO>(updatedCar)
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<UpdateCarDTO> response = new ApiResponse<UpdateCarDTO>
+                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message, };
+
+                return BadRequest(response);
+            }
+        }
+
+        [Authorize(Roles = "Owner, Employee")]
+        [HttpPost("{id}/Image")]
+        [SwaggerOperation(
+            Summary = "Adiciona imagem a um carro existente.",
+            Description = "Adiciona imagem a um carro existente."
+        )]
+        public async Task<ActionResult> AddCarImage(int id, IFormFile imageFile)
+        {
+            try
+            {
+                if (imageFile == null || imageFile.Length == 0)
+                    return BadRequest("Arquivo de imagem inválido");
+
+                Car car = await _carService.GetCarById(id);
+
+                using (var memoryStream = new MemoryStream())
                 {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                    await imageFile.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+
+                    await _carService.UploadImage(car.Id, memoryStream);
+                }
+
+                ApiResponse<ResponseCarDTO> response =
+                    new() { Code = 1, Message = "Imagem salva com sucesso" };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -172,27 +192,19 @@ namespace Rent.API.Controllers
             Summary = "Remover carro por ID.",
             Description = "Remove um carro específico com base no seu ID."
         )]
-        public async Task<ActionResult<CarDTO>> DeleteCar(int id)
+        public async Task<ActionResult<ResponseCarDTO>> DeleteCar(int id)
         {
             try
             {
                 await _carService.DeleteCar(id);
 
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                };
+                ApiResponse<ResponseCarDTO> response = new() { Code = 1, Message = "Success.", };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CarDTO> response = new ApiResponse<CarDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }

@@ -41,7 +41,7 @@ namespace Rent.API.Controllers
                 var (owners, pagination) = await _ownerService.GetAllOwners(pageNumber, pageSize);
                 List<OwnerDTO> ownerDTOs = _mapper.Map<List<OwnerDTO>>(owners);
 
-                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>
+                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -53,7 +53,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>
+                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -75,7 +75,7 @@ namespace Rent.API.Controllers
                 Owner owner = await _ownerService.GetOwnerById(id);
                 OwnerDTO ownerDTO = _mapper.Map<OwnerDTO>(owner);
 
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -86,7 +86,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
                 {
                     Code = 0,
                     Message = ex.Message
@@ -111,7 +111,7 @@ namespace Rent.API.Controllers
 
                 CreateOwnerDTO addedOwnerDTO = _mapper.Map<CreateOwnerDTO>(addedOwner);
 
-                ApiResponse<CreateOwnerDTO> response = new ApiResponse<CreateOwnerDTO>
+                ApiResponse<CreateOwnerDTO> response = new ApiResponse<CreateOwnerDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -122,7 +122,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -147,7 +147,7 @@ namespace Rent.API.Controllers
 
                 UpdateOwnerDTO updatedOwnerDTO = _mapper.Map<UpdateOwnerDTO>(updatedOwner);
 
-                ApiResponse<UpdateOwnerDTO> response = new ApiResponse<UpdateOwnerDTO>
+                ApiResponse<UpdateOwnerDTO> response = new ApiResponse<UpdateOwnerDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -158,7 +158,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -179,7 +179,7 @@ namespace Rent.API.Controllers
             {
                 await _ownerService.DeleteOwner(id);
 
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -189,7 +189,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>
+                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
                 {
                     Code = 0,
                     Message = ex.Message

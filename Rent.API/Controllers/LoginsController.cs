@@ -18,10 +18,7 @@ namespace Rent.API.Controllers
         private readonly ILoginService _loginService;
         private readonly IMapper _mapper;
 
-        public LoginsController(
-            ILoginService loginService,
-            IMapper mapper
-        )
+        public LoginsController(ILoginService loginService, IMapper mapper)
         {
             _loginService = loginService;
             _mapper = mapper;
@@ -42,7 +39,7 @@ namespace Rent.API.Controllers
                 var (logins, pagination) = await _loginService.GetAllLogins(pageNumber, pageSize);
                 List<LoginDTO> loginsDTOs = _mapper.Map<List<LoginDTO>>(logins);
 
-                ApiResponse<List<LoginDTO>> response = new ApiResponse<List<LoginDTO>>
+                ApiResponse<List<LoginDTO>> response = new ApiResponse<List<LoginDTO>>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -54,7 +51,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<List<LoginDTO>> response = new ApiResponse<List<LoginDTO>>
+                ApiResponse<List<LoginDTO>> response = new ApiResponse<List<LoginDTO>>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -76,7 +73,7 @@ namespace Rent.API.Controllers
                 Login login = await _loginService.GetLoginById(id);
                 LoginDTO loginDTO = _mapper.Map<LoginDTO>(login);
 
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -87,7 +84,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 0,
                     Message = ex.Message
@@ -109,7 +106,7 @@ namespace Rent.API.Controllers
                 Login login = await _loginService.GetLoginById(parentId);
                 LoginDTO loginDTO = _mapper.Map<LoginDTO>(login);
 
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -120,7 +117,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 0,
                     Message = ex.Message
@@ -142,7 +139,7 @@ namespace Rent.API.Controllers
 
                 LoginRequest loginRequestDTO = _mapper.Map<LoginRequest>(addedLogin);
 
-                ApiResponse<LoginRequest> response = new ApiResponse<LoginRequest>
+                ApiResponse<LoginRequest> response = new ApiResponse<LoginRequest>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -153,7 +150,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<LoginRequest> response = new ApiResponse<LoginRequest>
+                ApiResponse<LoginRequest> response = new ApiResponse<LoginRequest>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -178,7 +175,7 @@ namespace Rent.API.Controllers
 
                 LoginDTO updatedLoginDTO = _mapper.Map<LoginDTO>(updatedLogin);
 
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -189,7 +186,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -210,7 +207,7 @@ namespace Rent.API.Controllers
             {
                 await _loginService.DeleteLogin(id);
 
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -220,7 +217,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>
+                ApiResponse<LoginDTO> response = new ApiResponse<LoginDTO>()
                 {
                     Code = 0,
                     Message = ex.Message

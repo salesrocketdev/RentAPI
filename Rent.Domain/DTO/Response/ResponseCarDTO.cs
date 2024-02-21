@@ -1,8 +1,6 @@
-﻿using Rent.Domain.Entities;
-
-namespace Rent.Domain.DTO.Response
+﻿namespace Rent.Domain.DTO.Response
 {
-    public class CarDTO
+    public class ResponseCarDTO
     {
         public int Id { get; set; }
         public string? Brand { get; set; }
@@ -12,7 +10,7 @@ namespace Rent.Domain.DTO.Response
         public string? Plate { get; set; }
         public decimal DailyValue { get; set; }
         public bool Available { get; set; }
-        public List<CarImage>? CarImages { get; set; }
+        public List<CarImageDTO>? CarImages { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

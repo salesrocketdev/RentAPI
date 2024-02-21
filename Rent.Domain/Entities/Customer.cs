@@ -1,5 +1,5 @@
-﻿using Rent.Core.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Rent.Core.Models;
 
 namespace Rent.Domain.Entities
 {
@@ -11,16 +11,14 @@ namespace Rent.Domain.Entities
         [Range(18, int.MaxValue, ErrorMessage = "A idade deve ser maior que 18 anos.")]
         public int Age { get; set; }
 
-        [Required(ErrorMessage = "O endereço é obrigatório.")]
-        public string? Address { get; set; }
-
         [Required(ErrorMessage = "O telefone é obrigatório.")]
         public string? Phone { get; set; }
 
-        [Required(ErrorMessage = "O email é obrigatório.")]
+        [Required(ErrorMessage = "O e-mail é obrigatório.")]
+        [DataType(DataType.EmailAddress, ErrorMessage = "E-mail em formato inválido.")]
         public string? Email { get; set; }
 
         // Navigation properties
-        public Document? Document { get; set; }
+        public required Document Document { get; set; }
     }
 }

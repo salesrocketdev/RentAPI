@@ -1,16 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rent.Domain.Entities;
-using Rent.Infrastructure.Data;
 using Rent.Core.Models;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.Collections.Generic;
+using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {
-    public class OwnerRepository : BaseRepository, IOwnerRepository
+    public class OwnerRepository : BaseRepository<Owner>, IOwnerRepository
     {
         public OwnerRepository(DataContext context)
             : base(context) { }
@@ -37,8 +33,8 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<Owner> GetOwnerById(int id)
         {
-            Owner? owner = await _context.Owners
-                .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
+            Owner? owner = await _context
+                .Owners.Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
                 .FirstOrDefaultAsync();
 
             return owner ?? throw new Exception("Owner not found");
