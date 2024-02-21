@@ -1,4 +1,5 @@
-﻿using Rent.Core.Models;
+﻿using AutoMapper;
+using Rent.Core.Models;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
@@ -10,16 +11,19 @@ namespace Rent.Domain.Services
         private readonly ICarRepository _carRepository;
         private readonly ICarImageRepository _carImageRepository;
         private readonly IBlobStorageRepository _blobStorageRepository;
+        private readonly IMapper _mapper;
 
         public CarService(
             ICarRepository carRepository,
             ICarImageRepository carImageRepository,
-            IBlobStorageRepository blobStorageRepository
+            IBlobStorageRepository blobStorageRepository,
+            IMapper mapper
         )
         {
             _carRepository = carRepository;
             _carImageRepository = carImageRepository;
             _blobStorageRepository = blobStorageRepository;
+            _mapper = mapper;
         }
 
         public async Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize)
@@ -67,9 +71,9 @@ namespace Rent.Domain.Services
             }
         }
 
-        public async Task DeleteCar(int id)
+        public async Task<bool> DeleteCar(int id)
         {
-            await _carRepository.DeleteCar(id);
+            return await _carRepository.DeleteCar(id);
         }
     }
 }

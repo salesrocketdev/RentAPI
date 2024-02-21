@@ -70,13 +70,13 @@ namespace Rent.Infrastructure.Repositories
             return query;
         }
 
-        public async Task DeleteCar(int id)
+        public async Task<bool> DeleteCar(int id)
         {
             var query = await _context.Cars.FindAsync(id) ?? throw new Exception("Car not found.");
 
             query.IsDeleted = true;
 
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

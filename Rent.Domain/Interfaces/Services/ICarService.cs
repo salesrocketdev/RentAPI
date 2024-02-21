@@ -10,6 +10,6 @@ namespace Rent.Domain.Interfaces.Services
         Task<Car> AddCar(Car car);
         Task<Car> UpdateCar(Car car);
         Task UploadImage(int carId, MemoryStream memoryStream);
-        Task DeleteCar(int id);
+        Task<bool> DeleteCar(int id);
     }
 }
