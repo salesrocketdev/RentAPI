@@ -1,13 +1,12 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
     {
       "name": ".NET Core Launch (web)",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/Rent.API/bin/Debug/net6.0/Rent.API.dll",
+      "program": "${workspaceFolder}/Rent.API/bin/Debug/net7.0/Rent.API.dll",
       "args": [],
       "cwd": "${workspaceFolder}/Rent.API",
       "stopAtEntry": false,
@@ -47,6 +46,13 @@
       "sourceFileMap": {
         "/Views": "${workspaceFolder}/Views"
       }
+    },
+    {
+      "name": "C#: Rent.API",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/Rent.API/Rent.API.csproj",
+      "launchConfigurationId": "TargetFramework=;RentAPI"
     }
   ]
 }

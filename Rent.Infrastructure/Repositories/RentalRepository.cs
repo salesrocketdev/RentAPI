@@ -7,7 +7,7 @@ using Rent.Infrastructure.Repositories;
 
 namespace Rent.Infrastructure;
 
-public class RentalRepository : BaseRepository, IRentalRepository
+public class RentalRepository : BaseRepository<Rental>, IRentalRepository
 {
     public RentalRepository(DataContext context)
         : base(context) { }
@@ -15,8 +15,7 @@ public class RentalRepository : BaseRepository, IRentalRepository
     public async Task<(List<Rental>, PaginationMeta)> GetAllRentals(int pageNumber, int pageSize)
     {
         var query = _context
-            .Rentals
-            .Include(x => x.Customer)
+            .Rentals.Include(x => x.Customer)
             .ThenInclude(c => c.Document)
             .Include(x => x.Employee)
             .Include(x => x.Car)
@@ -41,8 +40,7 @@ public class RentalRepository : BaseRepository, IRentalRepository
     public async Task<Rental> GetRentalById(int id)
     {
         Rental? customer = await _context
-            .Rentals
-            .Include(x => x.Customer)
+            .Rentals.Include(x => x.Customer)
             .ThenInclude(c => c.Document)
             .Include(x => x.Employee)
             .Include(x => x.Car)

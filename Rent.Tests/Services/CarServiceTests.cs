@@ -1,21 +1,29 @@
 ﻿using Moq;
-using Rent.Domain.Entities;
 using Rent.Core.Models;
-using Rent.Domain.Services;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
+using Rent.Domain.Services;
 
 namespace Rent.Tests.Services
 {
     public class CarServiceTests
     {
-        private readonly Mock<ICarRepository> _carRepositoryMock;
         private readonly ICarService _carService;
+        private readonly Mock<ICarRepository> _carRepositoryMock;
+        private readonly Mock<ICarImageRepository> _carImageRepositoryMock;
+        private readonly Mock<IBlobStorageRepository> _blobStorageRepositoryMock;
 
         public CarServiceTests()
         {
             _carRepositoryMock = new Mock<ICarRepository>();
-            _carService = new CarService(_carRepositoryMock.Object);
+            _carImageRepositoryMock = new Mock<ICarImageRepository>();
+            _blobStorageRepositoryMock = new Mock<IBlobStorageRepository>();
+            _carService = new CarService(
+                _carRepositoryMock.Object,
+                _carImageRepositoryMock.Object,
+                _blobStorageRepositoryMock.Object
+            );
         }
 
         [Fact]

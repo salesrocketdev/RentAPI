@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Rent.Domain.DTO.Request.Update
+﻿namespace Rent.Domain.DTO.Request.Update
 {
     public class UpdateCarDTO
     {

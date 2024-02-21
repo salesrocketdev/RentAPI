@@ -1,6 +1,6 @@
 ﻿namespace Rent.Domain.DTO.Response
 {
-    public class EmployeeDTO
+    public class ResponseEmployeeDTO
     {
         public int Id { get; set; }
         public string? Name { get; set; }

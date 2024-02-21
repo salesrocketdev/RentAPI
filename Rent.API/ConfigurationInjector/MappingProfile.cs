@@ -12,20 +12,25 @@ namespace Rent.API.ConfigurationInjector
         public MappingProfile()
         {
             #region CreateDTO to Model
+            CreateMap<CreateCarDTO, Car>();
             CreateMap<CreateEmployeeDTO, Employee>();
             CreateMap<CreateCustomerDTO, Customer>();
             CreateMap<CreateOwnerDTO, Owner>();
             CreateMap<CreateRentalDTO, Rental>();
+            CreateMap<CreateDocumentDTO, Document>();
             #endregion
 
             #region Model to CreateDTO
+            CreateMap<Car, CreateCarDTO>();
             CreateMap<Employee, CreateEmployeeDTO>();
             CreateMap<Customer, CreateCustomerDTO>();
             CreateMap<Owner, CreateOwnerDTO>();
             CreateMap<Rental, CreateRentalDTO>();
+            CreateMap<Document, CreateDocumentDTO>();
             #endregion
 
             #region UpdateDTO to Model
+            CreateMap<UpdateCarDTO, Car>();
             CreateMap<UpdateEmployeeDTO, Employee>();
             CreateMap<UpdateCustomerDTO, Customer>();
             CreateMap<UpdateOwnerDTO, Owner>();
@@ -33,6 +38,7 @@ namespace Rent.API.ConfigurationInjector
             #endregion
 
             #region Model to UpdateDTO
+            CreateMap<Car, UpdateCarDTO>();
             CreateMap<Employee, UpdateEmployeeDTO>();
             CreateMap<Customer, UpdateCustomerDTO>();
             CreateMap<Owner, UpdateOwnerDTO>();
@@ -40,10 +46,12 @@ namespace Rent.API.ConfigurationInjector
             #endregion
 
             #region DTO to Model
-            CreateMap<CarDTO, Car>();
+            CreateMap<ResponseCarDTO, Car>();
             CreateMap<CarImageDTO, CarImage>();
-            CreateMap<CustomerDTO, Customer>();
-            CreateMap<EmployeeDTO, Employee>();
+            CreateMap<ResponseCustomerDTO, Customer>();
+            // CreateMap<ResponseCustomerDTO, Customer>()
+            //     .ForMember(dest => dest.Document.CustomerId, opt => opt.MapFrom(src => src.Id));
+            CreateMap<ResponseEmployeeDTO, Employee>();
             CreateMap<OwnerDTO, Owner>();
             CreateMap<RentalDTO, Rental>();
             CreateMap<DocumentDTO, Document>();
@@ -53,10 +61,10 @@ namespace Rent.API.ConfigurationInjector
             #endregion
 
             #region Model to DTO
-            CreateMap<Car, CarDTO>();
+            CreateMap<Car, ResponseCarDTO>();
             CreateMap<CarImage, CarImageDTO>();
-            CreateMap<Customer, CustomerDTO>();
-            CreateMap<Employee, EmployeeDTO>();
+            CreateMap<Customer, ResponseCustomerDTO>();
+            CreateMap<Employee, ResponseEmployeeDTO>();
             CreateMap<Owner, OwnerDTO>();
             CreateMap<Rental, RentalDTO>();
             CreateMap<Document, DocumentDTO>();

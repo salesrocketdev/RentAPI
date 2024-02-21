@@ -1,7 +1,7 @@
-﻿using Rent.Domain.Interfaces.Repositories;
-using Rent.Domain.Interfaces.Services;
+﻿using Rent.Core.Models;
 using Rent.Domain.Entities;
-using Rent.Core.Models;
+using Rent.Domain.Interfaces.Repositories;
+using Rent.Domain.Interfaces.Services;
 
 namespace Rent.Domain.Services
 {
@@ -37,24 +37,41 @@ namespace Rent.Domain.Services
 
         public async Task<Customer> AddCustomer(Customer customer)
         {
+            Customer? customerVerification = _customerRepository.Find(
+                x =>
+                    x.Email == customer.Email
+                    || x.Document.TaxNumber == customer.Document.TaxNumber,
+                x => x.Document
+            );
+
+            if (customerVerification != null)
+            {
+                if (customer.Document.TaxNumber == customerVerification.Document.TaxNumber)
+                    throw new Exception("O cpf já está em uso.");
+
+                if (customer.Email == customerVerification.Email)
+                    throw new Exception("O email já está em uso.");
+            }
+
             var password = _securityService.GenerateRandomPassword(8);
             var hash = _securityService.HashPassword(password, out var salt);
 
-            var customerResult = await _customerRepository.AddCustomer(customer);
+            var newCustomer = await _customerRepository.AddCustomer(customer);
 
             Login login =
                 new()
                 {
                     Email = customer.Email,
-                    UserType = Domain.Enums.UserType.Customer,
-                    ParentId = customerResult.Id,
+                    UserType = Enums.UserType.Customer,
+                    ParentId = newCustomer.Id,
                     PasswordHash = hash,
                     PasswordSalt = salt,
                     CreatedAt = DateTime.UtcNow
                 };
 
             await _loginRepository.AddLogin(login);
-            return customerResult;
+
+            return newCustomer;
         }
 
         public async Task<Customer> UpdateCustomer(Customer customer)

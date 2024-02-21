@@ -6,7 +6,7 @@ using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {
-    public class CarRepository : BaseRepository, ICarRepository
+    public class CarRepository : BaseRepository<Car>, ICarRepository
     {
         public CarRepository(DataContext context)
             : base(context) { }
@@ -14,8 +14,7 @@ namespace Rent.Infrastructure.Repositories
         public async Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize)
         {
             var query = _context
-                .Cars
-                .Include(x => x.CarImages)
+                .Cars.Include(x => x.CarImages)
                 .Where(x => x.IsActive == true && x.IsDeleted == false);
 
             int totalItems = query.Count();
@@ -36,7 +35,11 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<Car> GetCarById(int id)
         {
-            Car? car = await _context.Cars.FindAsync(id);
+            Car? car = await _context
+                .Cars.Include(x => x.CarImages)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+
             return car ?? throw new Exception("Car not found");
         }
 
@@ -52,6 +55,7 @@ namespace Rent.Infrastructure.Repositories
         {
             var query =
                 await _context.Cars.FindAsync(car.Id) ?? throw new Exception("Car not found.");
+
             query.Available = car.Available;
             query.Brand = car.Brand;
             query.Color = car.Color;
@@ -59,6 +63,7 @@ namespace Rent.Infrastructure.Repositories
             query.Plate = car.Plate;
             query.DailyValue = car.DailyValue;
             query.Year = car.Year;
+            query.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
@@ -68,6 +73,7 @@ namespace Rent.Infrastructure.Repositories
         public async Task DeleteCar(int id)
         {
             var query = await _context.Cars.FindAsync(id) ?? throw new Exception("Car not found.");
+
             query.IsDeleted = true;
 
             await _context.SaveChangesAsync();

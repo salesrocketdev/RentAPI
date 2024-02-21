@@ -6,7 +6,7 @@ using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {
-    public class CustomerRepository : BaseRepository, ICustomerRepository
+    public class CustomerRepository : BaseRepository<Customer>, ICustomerRepository
     {
         public CustomerRepository(DataContext context)
             : base(context) { }
@@ -16,8 +16,8 @@ namespace Rent.Infrastructure.Repositories
             int pageSize
         )
         {
-            var query = _context.Customers
-                .Include(x => x.Document)
+            var query = _context
+                .Customers.Include(x => x.Document)
                 .Where(x => x.IsActive == true && x.IsDeleted == false);
 
             int totalItems = await query.CountAsync();
@@ -41,17 +41,33 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<Customer> GetCustomerById(int id)
         {
-            Customer? customer = await _context.Customers
-                .Include(x => x.Document)
+            Customer? customer = await _context
+                .Customers.Include(x => x.Document)
                 .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
                 .FirstOrDefaultAsync();
 
             return customer ?? throw new Exception("Customer not found");
         }
 
+        public async Task<Customer> GetCustomerByEmailOrTaxNumber(string email, string taxNumber)
+        {
+            Customer? customerVerification = await _context
+                .Customers.Include(x => x.Document)
+                .Where(x =>
+                    x.Email == email && x.IsActive == true && x.IsDeleted == false
+                    || x.Document.TaxNumber == taxNumber
+                        && x.IsActive == true
+                        && x.IsDeleted == false
+                )
+                .FirstOrDefaultAsync();
+
+            return customerVerification ?? null;
+        }
+
         public async Task<Customer> AddCustomer(Customer customer)
         {
             _context.Customers.Add(customer);
+
             await _context.SaveChangesAsync();
 
             return customer;
@@ -64,9 +80,9 @@ namespace Rent.Infrastructure.Repositories
                 ?? throw new Exception("Customer not found.");
 
             query.Email = customer.Email;
-            query.Address = customer.Address;
             query.Name = customer.Name;
             query.Phone = customer.Phone;
+            query.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
@@ -78,7 +94,9 @@ namespace Rent.Infrastructure.Repositories
             var query =
                 await _context.Customers.FindAsync(id)
                 ?? throw new Exception("Customer not found.");
-            _context.Customers.Remove(query);
+
+            query.IsDeleted = true;
+
             await _context.SaveChangesAsync();
         }
     }

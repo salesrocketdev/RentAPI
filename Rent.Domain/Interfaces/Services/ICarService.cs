@@ -9,6 +9,7 @@ namespace Rent.Domain.Interfaces.Services
         Task<Car> GetCarById(int id);
         Task<Car> AddCar(Car car);
         Task<Car> UpdateCar(Car car);
+        Task UploadImage(int carId, MemoryStream memoryStream);
         Task DeleteCar(int id);
     }
 }

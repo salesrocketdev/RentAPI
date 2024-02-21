@@ -1,29 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rent.Domain.Entities;
-using Rent.Infrastructure.Data;
 using Rent.Core.Models;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.Collections.Generic;
+using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {
-    public class LoginRepository : BaseRepository, ILoginRepository
+    public class LoginRepository : BaseRepository<Login>, ILoginRepository
     {
         public LoginRepository(DataContext context)
             : base(context) { }
 
         public async Task<Login> Authenticate(string email, string password)
         {
-            Login? login = await _context.Logins
-                .Where(
-                    x =>
-                        x.Email == email
-                        // && x.Password == password
-                        && x.IsActive == true
-                        && x.IsDeleted == false
+            Login? login = await _context
+                .Logins.Where(x =>
+                    x.Email == email
+                    // && x.Password == password
+                    && x.IsActive == true
+                    && x.IsDeleted == false
                 )
                 .FirstOrDefaultAsync();
 
@@ -52,8 +47,8 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<Login> GetLoginById(int id)
         {
-            Login? login = await _context.Logins
-                .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
+            Login? login = await _context
+                .Logins.Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
                 .FirstOrDefaultAsync();
 
             return login ?? throw new Exception("Login not found");
@@ -61,8 +56,8 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<Login> GetLoginByEmail(string? email)
         {
-            Login? login = await _context.Logins
-                .Where(x => x.Email == email && x.IsActive == true && x.IsDeleted == false)
+            Login? login = await _context
+                .Logins.Where(x => x.Email == email && x.IsActive == true && x.IsDeleted == false)
                 .FirstOrDefaultAsync();
 
             return login ?? throw new Exception("Login not found");
@@ -70,8 +65,10 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<Login> GetLoginByParentId(int parentId)
         {
-            Login? login = await _context.Logins
-                .Where(x => x.ParentId == parentId && x.IsActive == true && x.IsDeleted == false)
+            Login? login = await _context
+                .Logins.Where(x =>
+                    x.ParentId == parentId && x.IsActive == true && x.IsDeleted == false
+                )
                 .FirstOrDefaultAsync();
 
             return login ?? throw new Exception("Login not found");

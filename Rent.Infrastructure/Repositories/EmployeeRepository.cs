@@ -1,16 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rent.Domain.Entities;
-using Rent.Infrastructure.Data;
 using Rent.Core.Models;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.Collections.Generic;
+using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {
-    public class EmployeeRepository : BaseRepository, IEmployeeRepository
+    public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     {
         public EmployeeRepository(DataContext context)
             : base(context) { }
@@ -43,8 +39,8 @@ namespace Rent.Infrastructure.Repositories
 
         public async Task<Employee> GetEmployeeById(int id)
         {
-            Employee? employee = await _context.Employees
-                .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
+            Employee? employee = await _context
+                .Employees.Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
                 .FirstOrDefaultAsync();
 
             return employee ?? throw new Exception("Employee not found");
@@ -68,6 +64,7 @@ namespace Rent.Infrastructure.Repositories
             query.Address = employee.Address;
             query.Name = employee.Name;
             query.Phone = employee.Phone;
+            query.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
@@ -79,7 +76,8 @@ namespace Rent.Infrastructure.Repositories
             var query =
                 await _context.Employees.FindAsync(id)
                 ?? throw new Exception("Employee not found.");
-            _context.Employees.Remove(query);
+            query.IsDeleted = true;
+
             await _context.SaveChangesAsync();
         }
     }

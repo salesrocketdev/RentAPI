@@ -45,7 +45,7 @@ namespace Rent.API.Controllers
                 );
                 List<RentalDTO> employeeDTOs = _mapper.Map<List<RentalDTO>>(employees);
 
-                ApiResponse<List<RentalDTO>> response = new ApiResponse<List<RentalDTO>>
+                ApiResponse<List<RentalDTO>> response = new ApiResponse<List<RentalDTO>>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -57,7 +57,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<List<RentalDTO>> response = new ApiResponse<List<RentalDTO>>
+                ApiResponse<List<RentalDTO>> response = new ApiResponse<List<RentalDTO>>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -80,7 +80,7 @@ namespace Rent.API.Controllers
                 Rental rental = await _rentalService.GetRentalById(id);
                 RentalDTO RentalDTO = _mapper.Map<RentalDTO>(rental);
 
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>
+                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -91,7 +91,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>
+                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
                 {
                     Code = 0,
                     Message = ex.Message
@@ -117,7 +117,7 @@ namespace Rent.API.Controllers
 
                 CreateRentalDTO addedRentalDTO = _mapper.Map<CreateRentalDTO>(addedRental);
 
-                ApiResponse<CreateRentalDTO> response = new ApiResponse<CreateRentalDTO>
+                ApiResponse<CreateRentalDTO> response = new ApiResponse<CreateRentalDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -128,7 +128,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>
+                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
                 {
                     Code = 0,
                     Message = ex.Message,
@@ -153,7 +153,7 @@ namespace Rent.API.Controllers
 
                 UpdateRentalDTO updatedRentalDTO = _mapper.Map<UpdateRentalDTO>(updatedRental);
 
-                ApiResponse<UpdateRentalDTO> response = new ApiResponse<UpdateRentalDTO>
+                ApiResponse<UpdateRentalDTO> response = new ApiResponse<UpdateRentalDTO>()
                 {
                     Code = 1,
                     Message = "Success.",
@@ -164,7 +164,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>
+                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
                 {
                     Code = 0,
                     Message = ex.Message,

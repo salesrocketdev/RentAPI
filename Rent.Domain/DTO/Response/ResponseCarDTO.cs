@@ -1,6 +1,6 @@
 ﻿namespace Rent.Domain.DTO.Response
 {
-    public class CarDTO
+    public class ResponseCarDTO
     {
         public int Id { get; set; }
         public string? Brand { get; set; }

@@ -39,7 +39,7 @@ namespace Rent.Domain.Services
 
         public async Task DeleteEmployee(int id)
         {
-            await _employeeRepository.GetEmployeeById(id);
+            await _employeeRepository.DeleteEmployee(id);
         }
     }
 }

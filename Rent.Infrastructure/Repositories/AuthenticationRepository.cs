@@ -1,19 +1,19 @@
-﻿using Rent.Domain.Entities;
-using Rent.Infrastructure.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Repositories
 {
-    public class AuthenticationRepository : BaseRepository, IAuthenticationRepository
+    public class AuthenticationRepository : BaseRepository<RevokedToken>, IAuthenticationRepository
     {
         public AuthenticationRepository(DataContext context)
             : base(context) { }
 
         public async Task<bool> IsTokenRevoked(string token)
         {
-            RevokedToken? revokedToken = await _context.RevokedTokens
-                .Where(x => x.TokenId == token)
+            RevokedToken? revokedToken = await _context
+                .RevokedTokens.Where(x => x.TokenId == token)
                 .FirstOrDefaultAsync();
 
             if (revokedToken == null)

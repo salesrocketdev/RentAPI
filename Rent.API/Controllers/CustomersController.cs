@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Rent.Domain.Entities;
-using AutoMapper;
-using Rent.Core.Models;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.Annotations;
-using Rent.Domain.DTO.Response;
-using Rent.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Mvc;
+using Rent.Core.Models;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
+using Rent.Domain.Entities;
+using Rent.Domain.Interfaces.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Rent.API.Controllers
 {
@@ -31,7 +31,7 @@ namespace Rent.API.Controllers
             Summary = "Retorna todos os clientes cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de clientes cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<CustomerDTO>>> GetAllCustomers(
+        public async Task<ActionResult<List<ResponseCustomerDTO>>> GetAllCustomers(
             int pageNumber = 1,
             int pageSize = 10
         )
@@ -42,25 +42,25 @@ namespace Rent.API.Controllers
                     pageNumber,
                     pageSize
                 );
-                List<CustomerDTO> customerDTOs = _mapper.Map<List<CustomerDTO>>(customers);
+                List<ResponseCustomerDTO> customerDTOs = _mapper.Map<List<ResponseCustomerDTO>>(
+                    customers
+                );
 
-                ApiResponse<List<CustomerDTO>> response = new ApiResponse<List<CustomerDTO>>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = customerDTOs,
-                    Pagination = pagination
-                };
+                ApiResponse<List<ResponseCustomerDTO>> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = customerDTOs,
+                        Pagination = pagination
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<CustomerDTO>> response = new ApiResponse<List<CustomerDTO>>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<List<ResponseCustomerDTO>> response =
+                    new() { Code = 0, Message = ex.Message, };
 
                 return Ok(response);
             }
@@ -72,29 +72,27 @@ namespace Rent.API.Controllers
             Summary = "Obter cliente por ID.",
             Description = "Retorna um cliente específico com base no seu ID."
         )]
-        public async Task<ActionResult<CustomerDTO>> GetCustomerById(int id)
+        public async Task<ActionResult<ResponseCustomerDTO>> GetCustomerById(int id)
         {
             try
             {
                 Customer customer = await _customerService.GetCustomerById(id);
-                CustomerDTO customerDTO = _mapper.Map<CustomerDTO>(customer);
+                ResponseCustomerDTO customerDTO = _mapper.Map<ResponseCustomerDTO>(customer);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = customerDTO
-                };
+                ApiResponse<ResponseCustomerDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = customerDTO
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiResponse<ResponseCustomerDTO> response =
+                    new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }
@@ -106,32 +104,28 @@ namespace Rent.API.Controllers
             Summary = "Criar um novo cliente.",
             Description = "Cria um novo cliente."
         )]
-        public async Task<ActionResult<CustomerDTO>> CreateCustomer(CreateCustomerDTO customerRequest)
+        public async Task<ActionResult<ResponseCustomerDTO>> CreateCustomer(
+            CreateCustomerDTO createCustomerDTO
+        )
         {
             try
             {
-                Customer customer = _mapper.Map<Customer>(customerRequest);
+                Customer mappedCustomer = _mapper.Map<Customer>(createCustomerDTO);
 
-                Customer addedCustomer = await _customerService.AddCustomer(customer);
+                Customer createdCustomer = await _customerService.AddCustomer(mappedCustomer);
 
-                CreateCustomerDTO addedCustomerDTO = _mapper.Map<CreateCustomerDTO>(addedCustomer);
-
-                ApiResponse<CreateCustomerDTO> response = new ApiResponse<CreateCustomerDTO>
+                var response = new
                 {
                     Code = 1,
-                    Message = "Success.",
-                    Data = addedCustomerDTO
+                    Message = "Success",
+                    Data = _mapper.Map<CreateCustomerDTO>(createdCustomer)
                 };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                var response = new { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -143,32 +137,30 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um cliente existente.",
             Description = "Atualiza um cliente existente."
         )]
-        public async Task<ActionResult<CustomerDTO>> UpdateCustomer(UpdateCustomerDTO customerRequest)
+        public async Task<ActionResult<ResponseCustomerDTO>> UpdateCustomer(
+            UpdateCustomerDTO updateCustomerDTO
+        )
         {
             try
             {
-                Customer customer = _mapper.Map<Customer>(customerRequest);
+                Customer mappedCustomer = _mapper.Map<Customer>(updateCustomerDTO);
 
-                Customer updatedCustomer = await _customerService.UpdateCustomer(customer);
+                Customer updatedCustomer = await _customerService.UpdateCustomer(mappedCustomer);
 
-                UpdateCustomerDTO updatedCustomerDTO = _mapper.Map<UpdateCustomerDTO>(updatedCustomer);
-
-                ApiResponse<UpdateCustomerDTO> response = new ApiResponse<UpdateCustomerDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = updatedCustomerDTO
-                };
+                ApiResponse<UpdateCustomerDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = _mapper.Map<UpdateCustomerDTO>(updatedCustomer)
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiResponse<ResponseCustomerDTO> response =
+                    new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -180,27 +172,21 @@ namespace Rent.API.Controllers
             Summary = "Remover cliente por ID.",
             Description = "Remove um cliente específico com base no seu ID."
         )]
-        public async Task<ActionResult<CustomerDTO>> DeleteCustomer(int id)
+        public async Task<ActionResult<ResponseCustomerDTO>> DeleteCustomer(int id)
         {
             try
             {
                 await _customerService.DeleteCustomer(id);
 
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
-                {
-                    Code = 1,
-                    Message = "Success.",
-                };
+                ApiResponse<ResponseCustomerDTO> response =
+                    new() { Code = 1, Message = "Success.", };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<CustomerDTO> response = new ApiResponse<CustomerDTO>
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiResponse<ResponseCustomerDTO> response =
+                    new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }
