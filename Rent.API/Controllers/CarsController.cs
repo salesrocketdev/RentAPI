@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Core.Response.Result;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
-using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -17,12 +16,10 @@ namespace Rent.API.Controllers
     public class CarsController : ControllerBase
     {
         private readonly ICarService _carService;
-        private readonly IMapper _mapper;
 
-        public CarsController(ICarService carService, IMapper mapper)
+        public CarsController(ICarService carService)
         {
             _carService = carService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -30,31 +27,29 @@ namespace Rent.API.Controllers
             Summary = "Retorna todos os carros cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de carros cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<ResponseCarDTO>>> GetAllCars(
+        public async Task<ActionResult<ResponsePaginateDTO<ResponseCarDTO>>> GetAllCars(
             int pageNumber = 1,
             int pageSize = 10
         )
         {
             try
             {
-                var (cars, pagination) = await _carService.GetAllCars(pageNumber, pageSize);
-                List<ResponseCarDTO> carsDTOs = _mapper.Map<List<ResponseCarDTO>>(cars);
+                ResponsePaginateDTO<ResponseCarDTO> responsePaginateDTO =
+                    await _carService.GetAllCars(pageNumber, pageSize);
 
-                ApiResponse<List<ResponseCarDTO>> response =
-                    new()
-                    {
-                        Code = 1,
-                        Message = "Success.",
-                        Data = carsDTOs,
-                        Pagination = pagination
-                    };
+                var response = new
+                {
+                    Code = 1,
+                    Message = "Success.",
+                    Data = responsePaginateDTO.Data,
+                    Pagination = responsePaginateDTO.PaginationMeta
+                };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<ResponseCarDTO>> response =
-                    new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return Ok(response);
             }
@@ -69,21 +64,21 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Car car = await _carService.GetCarById(id);
+                ResponseCarDTO responseCarDTO = await _carService.GetCarById(id);
 
                 ApiResponse<ResponseCarDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = _mapper.Map<ResponseCarDTO>(car)
+                        Data = responseCarDTO
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -96,23 +91,21 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Car mappedCar = _mapper.Map<Car>(createCarDTO);
+                ResponseCarDTO createdCar = await _carService.AddCar(createCarDTO);
 
-                Car createdCar = await _carService.AddCar(mappedCar);
-
-                ApiResponse<ResponseCarDTO> response =
+                ApiResultResponse<ResponseCarDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = _mapper.Map<ResponseCarDTO>(createdCar)
+                        Data = createdCar
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<object> response = new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -128,23 +121,21 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Car mappedCar = _mapper.Map<Car>(updateCarDTO);
+                ResponseCarDTO updatedCar = await _carService.UpdateCar(updateCarDTO);
 
-                Car updatedCar = await _carService.UpdateCar(mappedCar);
-
-                ApiResponse<ResponseCarDTO> response =
+                ApiResultResponse<ResponseCarDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = _mapper.Map<ResponseCarDTO>(updatedCar)
+                        Data = updatedCar
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -163,14 +154,14 @@ namespace Rent.API.Controllers
                 if (imageFile == null || imageFile.Length == 0)
                     return BadRequest("Arquivo de imagem inválido");
 
-                Car car = await _carService.GetCarById(id);
+                ResponseCarDTO responseCarDTO = await _carService.GetCarById(id);
 
                 using (var memoryStream = new MemoryStream())
                 {
                     await imageFile.CopyToAsync(memoryStream);
                     memoryStream.Position = 0;
 
-                    await _carService.UploadImage(car.Id, memoryStream);
+                    await _carService.UploadImage(responseCarDTO.Id, memoryStream);
                 }
 
                 ApiResponse<ResponseCarDTO> response =
@@ -180,7 +171,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -204,7 +195,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseCarDTO> response = new() { Code = 0, Message = ex.Message };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
