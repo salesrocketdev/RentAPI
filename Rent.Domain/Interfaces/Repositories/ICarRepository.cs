@@ -9,6 +9,6 @@ namespace Rent.Domain.Interfaces.Repositories
         Task<Car> GetCarById(int id);
         Task<Car> AddCar(Car car);
         Task<Car> UpdateCar(Car car);
-        Task DeleteCar(int id);
+        Task<bool> DeleteCar(int id);
     }
 }

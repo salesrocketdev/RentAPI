@@ -20,7 +20,10 @@ namespace Rent.Infrastructure.Repositories
             int totalItems = query.Count();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            var cars = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            List<Car> cars = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var pagination = new PaginationMeta
             {
@@ -70,13 +73,13 @@ namespace Rent.Infrastructure.Repositories
             return query;
         }
 
-        public async Task DeleteCar(int id)
+        public async Task<bool> DeleteCar(int id)
         {
             var query = await _context.Cars.FindAsync(id) ?? throw new Exception("Car not found.");
 
             query.IsDeleted = true;
 
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }
