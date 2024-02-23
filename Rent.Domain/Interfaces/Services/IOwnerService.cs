@@ -1,14 +1,15 @@
-﻿using Rent.Core.Models;
-using Rent.Domain.Entities;
+﻿using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 
 namespace Rent.Domain.Interfaces.Services
 {
     public interface IOwnerService
     {
-        Task<(List<Owner>, PaginationMeta)> GetAllOwners(int pageNumber, int pageSize);
-        Task<Owner> GetOwnerById(int id);
-        Task<Owner> AddOwner(Owner owner);
-        Task<Owner> UpdateOwner(Owner owner);
-        Task DeleteOwner(int id);
+        Task<ResponsePaginateDTO<ResponseOwnerDTO>> GetAllOwners(int pageNumber, int pageSize);
+        Task<ResponseOwnerDTO> GetOwnerById(int id);
+        Task<ResponseOwnerDTO> AddOwner(CreateOwnerDTO createOwnerDTO);
+        Task<ResponseOwnerDTO> UpdateOwner(UpdateOwnerDTO updateOwnerDTO);
+        Task<bool> DeleteOwner(int id);
     }
 }

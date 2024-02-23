@@ -37,13 +37,14 @@ namespace Rent.API.Controllers
                 ResponsePaginateDTO<ResponseCarDTO> responsePaginateDTO =
                     await _carService.GetAllCars(pageNumber, pageSize);
 
-                var response = new
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = responsePaginateDTO.Data,
-                    Pagination = responsePaginateDTO.PaginationMeta
-                };
+                ApiResponse<List<ResponseCarDTO>> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = responsePaginateDTO.Data,
+                        Pagination = responsePaginateDTO.PaginationMeta
+                    };
 
                 return Ok(response);
             }
@@ -66,7 +67,7 @@ namespace Rent.API.Controllers
             {
                 ResponseCarDTO responseCarDTO = await _carService.GetCarById(id);
 
-                ApiResponse<ResponseCarDTO> response =
+                ApiResultResponse<ResponseCarDTO> response =
                     new()
                     {
                         Code = 1,
@@ -189,7 +190,8 @@ namespace Rent.API.Controllers
             {
                 await _carService.DeleteCar(id);
 
-                ApiResponse<ResponseCarDTO> response = new() { Code = 1, Message = "Success.", };
+                ApiResultResponse<ResponseCarDTO> response =
+                    new() { Code = 1, Message = "Success.", };
 
                 return Ok(response);
             }

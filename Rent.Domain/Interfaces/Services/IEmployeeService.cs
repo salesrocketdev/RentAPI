@@ -1,14 +1,18 @@
-﻿using Rent.Core.Models;
-using Rent.Domain.Entities;
+﻿using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 
 namespace Rent.Domain.Interfaces.Services
 {
     public interface IEmployeeService
     {
-        Task<(List<Employee>, PaginationMeta)> GetAllEmployees(int pageNumber, int pageSize);
-        Task<Employee> GetEmployeeById(int id);
-        Task<Employee> AddEmployee(Employee employee);
-        Task<Employee> UpdateEmployee(Employee employee);
-        Task DeleteEmployee(int id);
+        Task<ResponsePaginateDTO<ResponseEmployeeDTO>> GetAllEmployees(
+            int pageNumber,
+            int pageSize
+        );
+        Task<ResponseEmployeeDTO> GetEmployeeById(int id);
+        Task<ResponseEmployeeDTO> AddEmployee(CreateEmployeeDTO employee);
+        Task<ResponseEmployeeDTO> UpdateEmployee(UpdateEmployeeDTO employee);
+        Task<bool> DeleteEmployee(int id);
     }
 }

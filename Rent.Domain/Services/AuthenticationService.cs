@@ -1,9 +1,8 @@
-using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Rent.Domain.Services
 {
@@ -27,45 +26,45 @@ namespace Rent.Domain.Services
             _authenticationRepository = authenticationRepository;
         }
 
-        public async Task<TokenResponse> Authenticate(string email, string password)
+        public async Task<ResponseTokenDTO> Authenticate(string email, string password)
         {
             Login login = await _loginRepository.GetLoginByEmail(email);
 
             if (login == null)
-            {
                 throw new Exception("Usuário não encontrado.");
-            }
 
-            var verificationResult = _securityService.VerifyPassword(
+            bool verificationResult = _securityService.VerifyPassword(
                 password,
                 login.PasswordHash,
                 login.PasswordSalt
             );
 
             if (verificationResult == false)
-            {
                 throw new Exception("Senha incorreta.");
-            }
 
-            var token = _tokenService.GenerateToken(login);
+            string token = _tokenService.GenerateToken(login);
 
-            TokenResponse tokenResponse =
+            ResponseTokenDTO responseToken =
                 new() { Token = token, ExpiresAt = DateTime.Now.AddHours(1) };
 
-            return tokenResponse;
+            return responseToken;
         }
 
         public UserMeta GetUserMeta(string token)
         {
             // Decodificar o token
             var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken ?? throw new Exception("Jwt Inválido.");
+            var jwtToken =
+                tokenHandler.ReadToken(token) as JwtSecurityToken
+                ?? throw new Exception("Jwt Inválido.");
 
             // Obter o tipo de usuário (UserType) das reivindicações (claims)
             var userMeta = new UserMeta
             {
                 UserType = jwtToken.Claims.FirstOrDefault(x => x.Type == "UserType")?.Value,
-                ParentId = Convert.ToInt16(jwtToken.Claims.FirstOrDefault(x => x.Type == "ParentId")?.Value)
+                ParentId = Convert.ToInt16(
+                    jwtToken.Claims.FirstOrDefault(x => x.Type == "ParentId")?.Value
+                )
             };
 
             if (userMeta == null)
@@ -76,7 +75,7 @@ namespace Rent.Domain.Services
             return userMeta;
         }
 
-        public async Task<TokenResponse> Refresh(string token)
+        public async Task<ResponseTokenDTO> Refresh(string token)
         {
             // Decodificar o token
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -107,10 +106,10 @@ namespace Rent.Domain.Services
 
             var refreshToken = _tokenService.GenerateToken(login);
 
-            TokenResponse tokenResponse =
+            ResponseTokenDTO responseToken =
                 new() { Token = refreshToken, ExpiresAt = DateTime.Now.AddHours(1) };
 
-            return tokenResponse;
+            return responseToken;
         }
 
         public async Task<bool> IsTokenRevoked(string token)

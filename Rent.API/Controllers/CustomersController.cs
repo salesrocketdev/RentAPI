@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Core.Response.Result;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
-using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -17,12 +16,10 @@ namespace Rent.API.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerService _customerService;
-        private readonly IMapper _mapper;
 
-        public CustomersController(ICustomerService customerService, IMapper mapper)
+        public CustomersController(ICustomerService customerService)
         {
             _customerService = customerService;
-            _mapper = mapper;
         }
 
         [Authorize(Roles = "Owner, Employee")]
@@ -31,36 +28,30 @@ namespace Rent.API.Controllers
             Summary = "Retorna todos os clientes cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de clientes cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<ResponseCustomerDTO>>> GetAllCustomers(
+        public async Task<ActionResult<ResponsePaginateDTO<ResponseCustomerDTO>>> GetAllCustomers(
             int pageNumber = 1,
             int pageSize = 10
         )
         {
             try
             {
-                var (customers, pagination) = await _customerService.GetAllCustomers(
-                    pageNumber,
-                    pageSize
-                );
-                List<ResponseCustomerDTO> customerDTOs = _mapper.Map<List<ResponseCustomerDTO>>(
-                    customers
-                );
+                ResponsePaginateDTO<ResponseCustomerDTO> responsePaginateDTO =
+                    await _customerService.GetAllCustomers(pageNumber, pageSize);
 
                 ApiResponse<List<ResponseCustomerDTO>> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = customerDTOs,
-                        Pagination = pagination
+                        Data = responsePaginateDTO.Data,
+                        Pagination = responsePaginateDTO.PaginationMeta
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<ResponseCustomerDTO>> response =
-                    new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return Ok(response);
             }
@@ -76,23 +67,23 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Customer customer = await _customerService.GetCustomerById(id);
-                ResponseCustomerDTO customerDTO = _mapper.Map<ResponseCustomerDTO>(customer);
+                ResponseCustomerDTO responseCustomerDTO = await _customerService.GetCustomerById(
+                    id
+                );
 
-                ApiResponse<ResponseCustomerDTO> response =
+                ApiResultResponse<ResponseCustomerDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = customerDTO
+                        Data = responseCustomerDTO
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseCustomerDTO> response =
-                    new() { Code = 0, Message = ex.Message };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -110,22 +101,23 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Customer mappedCustomer = _mapper.Map<Customer>(createCustomerDTO);
+                ResponseCustomerDTO createdCustomer = await _customerService.AddCustomer(
+                    createCustomerDTO
+                );
 
-                Customer createdCustomer = await _customerService.AddCustomer(mappedCustomer);
-
-                var response = new
-                {
-                    Code = 1,
-                    Message = "Success",
-                    Data = _mapper.Map<CreateCustomerDTO>(createdCustomer)
-                };
+                ApiResultResponse<ResponseCustomerDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success",
+                        Data = createdCustomer
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                var response = new { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -143,24 +135,23 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Customer mappedCustomer = _mapper.Map<Customer>(updateCustomerDTO);
+                ResponseCustomerDTO updatedCustomer = await _customerService.UpdateCustomer(
+                    updateCustomerDTO
+                );
 
-                Customer updatedCustomer = await _customerService.UpdateCustomer(mappedCustomer);
-
-                ApiResponse<UpdateCustomerDTO> response =
+                ApiResultResponse<ResponseCustomerDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = _mapper.Map<UpdateCustomerDTO>(updatedCustomer)
+                        Data = updatedCustomer
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseCustomerDTO> response =
-                    new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -185,8 +176,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseCustomerDTO> response =
-                    new() { Code = 0, Message = ex.Message };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }

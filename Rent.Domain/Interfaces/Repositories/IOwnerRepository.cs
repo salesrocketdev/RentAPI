@@ -9,6 +9,6 @@ namespace Rent.Domain.Interfaces.Repositories
         Task<Owner> GetOwnerById(int id);
         Task<Owner> AddOwner(Owner owner);
         Task<Owner> UpdateOwner(Owner owner);
-        Task DeleteOwner(int id);
+        Task<bool> DeleteOwner(int id);
     }
 }

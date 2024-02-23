@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Core.Response.Result;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
-using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -18,12 +17,10 @@ namespace Rent.API.Controllers
     public class OwnersController : ControllerBase
     {
         private readonly IOwnerService _ownerService;
-        private readonly IMapper _mapper;
 
-        public OwnersController(IOwnerService ownerService, IMapper mapper)
+        public OwnersController(IOwnerService ownerService)
         {
             _ownerService = ownerService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -31,33 +28,30 @@ namespace Rent.API.Controllers
             Summary = "Retorna todos os admnistradores cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de admnistradores cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<OwnerDTO>>> GetAllOwners(
+        public async Task<ActionResult<ResponsePaginateDTO<ResponseOwnerDTO>>> GetAllOwners(
             int pageNumber = 1,
             int pageSize = 10
         )
         {
             try
             {
-                var (owners, pagination) = await _ownerService.GetAllOwners(pageNumber, pageSize);
-                List<OwnerDTO> ownerDTOs = _mapper.Map<List<OwnerDTO>>(owners);
+                ResponsePaginateDTO<ResponseOwnerDTO> responsePaginateDTO =
+                    await _ownerService.GetAllOwners(pageNumber, pageSize);
 
-                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = ownerDTOs,
-                    Pagination = pagination
-                };
+                ApiResponse<List<ResponseOwnerDTO>> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = responsePaginateDTO.Data,
+                        Pagination = responsePaginateDTO.PaginationMeta
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<OwnerDTO>> response = new ApiResponse<List<OwnerDTO>>()
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return Ok(response);
             }
@@ -68,29 +62,25 @@ namespace Rent.API.Controllers
             Summary = "Obter administrador por ID.",
             Description = "Retorna um administrador específico com base no seu ID."
         )]
-        public async Task<ActionResult<OwnerDTO>> GetOwnerById(int id)
+        public async Task<ActionResult<ResponseOwnerDTO>> GetOwnerById(int id)
         {
             try
             {
-                Owner owner = await _ownerService.GetOwnerById(id);
-                OwnerDTO ownerDTO = _mapper.Map<OwnerDTO>(owner);
+                ResponseOwnerDTO responseOwnerDTO = await _ownerService.GetOwnerById(id);
 
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = ownerDTO
-                };
+                ApiResponse<ResponseOwnerDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = responseOwnerDTO
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -101,32 +91,25 @@ namespace Rent.API.Controllers
             Summary = "Criar um novo administrador.",
             Description = "Cria um novo administrador."
         )]
-        public async Task<ActionResult<OwnerDTO>> CreateOwner(CreateOwnerDTO ownerRequest)
+        public async Task<ActionResult<ResponseOwnerDTO>> CreateOwner(CreateOwnerDTO createOwnerDTO)
         {
             try
             {
-                Owner owner = _mapper.Map<Owner>(ownerRequest);
+                ResponseOwnerDTO createdOwner = await _ownerService.AddOwner(createOwnerDTO);
 
-                Owner addedOwner = await _ownerService.AddOwner(owner);
-
-                CreateOwnerDTO addedOwnerDTO = _mapper.Map<CreateOwnerDTO>(addedOwner);
-
-                ApiResponse<CreateOwnerDTO> response = new ApiResponse<CreateOwnerDTO>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = addedOwnerDTO
-                };
+                ApiResultResponse<ResponseOwnerDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = createdOwner
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -137,32 +120,25 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um administrador existente.",
             Description = "Atualiza um administrador existente."
         )]
-        public async Task<ActionResult<OwnerDTO>> UpdateOwner(UpdateOwnerDTO ownerRequest)
+        public async Task<ActionResult<ResponseOwnerDTO>> UpdateOwner(UpdateOwnerDTO updateOwnerDTO)
         {
             try
             {
-                Owner owner = _mapper.Map<Owner>(ownerRequest);
+                ResponseOwnerDTO updatedOwner = await _ownerService.UpdateOwner(updateOwnerDTO);
 
-                Owner updatedOwner = await _ownerService.UpdateOwner(owner);
-
-                UpdateOwnerDTO updatedOwnerDTO = _mapper.Map<UpdateOwnerDTO>(updatedOwner);
-
-                ApiResponse<UpdateOwnerDTO> response = new ApiResponse<UpdateOwnerDTO>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = updatedOwnerDTO
-                };
+                ApiResultResponse<ResponseOwnerDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = updatedOwner
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -173,27 +149,20 @@ namespace Rent.API.Controllers
             Summary = "Remover administrador por ID.",
             Description = "Remove um administrador específico com base no seu ID."
         )]
-        public async Task<ActionResult<OwnerDTO>> DeleteOwner(int id)
+        public async Task<ActionResult<ResponseOwnerDTO>> DeleteOwner(int id)
         {
             try
             {
                 await _ownerService.DeleteOwner(id);
 
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                };
+                ApiResultResponse<ResponseOwnerDTO> response =
+                    new() { Code = 1, Message = "Success.", };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<OwnerDTO> response = new ApiResponse<OwnerDTO>()
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }

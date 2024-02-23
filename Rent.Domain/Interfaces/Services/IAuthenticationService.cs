@@ -5,8 +5,8 @@ namespace Rent.Domain.Interfaces.Services
 {
     public interface IAuthenticationService
     {
-        Task<TokenResponse> Authenticate(string email, string password);
-        Task<TokenResponse> Refresh(string token);
+        Task<ResponseTokenDTO> Authenticate(string email, string password);
+        Task<ResponseTokenDTO> Refresh(string token);
         UserMeta GetUserMeta(string token);
         Task<bool> IsTokenRevoked(string token);
         Task<RevokedToken> RevokeToken(RevokedToken revokedToken);

@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Core.Response.Result;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
-using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -18,12 +17,10 @@ namespace Rent.API.Controllers
     public class RentalsController : Controller
     {
         private readonly IRentalService _rentalService;
-        private readonly IMapper _mapper;
 
-        public RentalsController(IRentalService rentalService, IMapper mapper)
+        public RentalsController(IRentalService rentalService)
         {
             _rentalService = rentalService;
-            _mapper = mapper;
         }
 
         [Authorize(Roles = "Owner, Employee")]
@@ -32,36 +29,30 @@ namespace Rent.API.Controllers
             Summary = "Retorna todos os alugueis cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de alugueis cadastrados no sistema."
         )]
-        public async Task<ActionResult<List<RentalDTO>>> GetAllRentals(
+        public async Task<ActionResult<ResponsePaginateDTO<ResponseRentalDTO>>> GetAllRentals(
             int pageNumber = 1,
             int pageSize = 10
         )
         {
             try
             {
-                var (employees, pagination) = await _rentalService.GetAllRentals(
-                    pageNumber,
-                    pageSize
-                );
-                List<RentalDTO> employeeDTOs = _mapper.Map<List<RentalDTO>>(employees);
+                ResponsePaginateDTO<ResponseRentalDTO> responsePaginateDTO =
+                    await _rentalService.GetAllRentals(pageNumber, pageSize);
 
-                ApiResponse<List<RentalDTO>> response = new ApiResponse<List<RentalDTO>>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = employeeDTOs,
-                    Pagination = pagination
-                };
+                ApiResponse<List<ResponseRentalDTO>> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = responsePaginateDTO.Data,
+                        Pagination = responsePaginateDTO.PaginationMeta
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<RentalDTO>> response = new ApiResponse<List<RentalDTO>>()
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message };
 
                 return Ok(response);
             }
@@ -73,29 +64,25 @@ namespace Rent.API.Controllers
             Summary = "Obter aluguel por ID.",
             Description = "Retorna um aluguel específico com base no seu ID."
         )]
-        public async Task<ActionResult<RentalDTO>> GetRentalById(int id)
+        public async Task<ActionResult<ResponseRentalDTO>> GetRentalById(int id)
         {
             try
             {
-                Rental rental = await _rentalService.GetRentalById(id);
-                RentalDTO RentalDTO = _mapper.Map<RentalDTO>(rental);
+                ResponseRentalDTO responseRentalDTO = await _rentalService.GetRentalById(id);
 
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = RentalDTO
-                };
+                ApiResultResponse<ResponseRentalDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = responseRentalDTO
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
-                {
-                    Code = 0,
-                    Message = ex.Message
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }
@@ -107,32 +94,27 @@ namespace Rent.API.Controllers
             Summary = "Criar um novo aluguel.",
             Description = "Cria um novo aluguel."
         )]
-        public async Task<ActionResult<RentalDTO>> CreateRental(CreateRentalDTO rentalRequest)
+        public async Task<ActionResult<ResponseRentalDTO>> CreateRental(
+            CreateRentalDTO createRentalDTO
+        )
         {
             try
             {
-                Rental rental = _mapper.Map<Rental>(rentalRequest);
+                ResponseRentalDTO createdRental = await _rentalService.AddRental(createRentalDTO);
 
-                Rental addedRental = await _rentalService.AddRental(rental);
-
-                CreateRentalDTO addedRentalDTO = _mapper.Map<CreateRentalDTO>(addedRental);
-
-                ApiResponse<CreateRentalDTO> response = new ApiResponse<CreateRentalDTO>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = addedRentalDTO
-                };
+                ApiResultResponse<ResponseRentalDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = createdRental
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }
@@ -143,32 +125,29 @@ namespace Rent.API.Controllers
             Summary = "Atualiza um aluguel existente.",
             Description = "Atualiza um aluguel existente."
         )]
-        public async Task<ActionResult<RentalDTO>> UpdateRental(UpdateRentalDTO rentalRequest)
+        public async Task<ActionResult<ResponseRentalDTO>> UpdateRental(
+            UpdateRentalDTO updateRentalDTO
+        )
         {
             try
             {
-                Rental rental = _mapper.Map<Rental>(rentalRequest);
+                ResponseRentalDTO updatedRental = await _rentalService.UpdateRental(
+                    updateRentalDTO
+                );
 
-                Rental updatedRental = await _rentalService.UpdateRental(rental);
-
-                UpdateRentalDTO updatedRentalDTO = _mapper.Map<UpdateRentalDTO>(updatedRental);
-
-                ApiResponse<UpdateRentalDTO> response = new ApiResponse<UpdateRentalDTO>()
-                {
-                    Code = 1,
-                    Message = "Success.",
-                    Data = updatedRentalDTO
-                };
+                ApiResultResponse<ResponseRentalDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = updatedRental
+                    };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<RentalDTO> response = new ApiResponse<RentalDTO>()
-                {
-                    Code = 0,
-                    Message = ex.Message,
-                };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message };
 
                 return BadRequest(response);
             }

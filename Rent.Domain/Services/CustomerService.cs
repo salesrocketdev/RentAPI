@@ -1,4 +1,8 @@
-﻿using Rent.Core.Models;
+﻿using AutoMapper;
+using Rent.Core.Models;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
@@ -10,58 +14,79 @@ namespace Rent.Domain.Services
         private readonly ISecurityService _securityService;
         private readonly ILoginRepository _loginRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IMapper _mapper;
 
         public CustomerService(
             ISecurityService securityService,
             ILoginRepository loginRepository,
-            ICustomerRepository customerRepository
+            ICustomerRepository customerRepository,
+            IMapper mapper
         )
         {
             _securityService = securityService;
             _loginRepository = loginRepository;
             _customerRepository = customerRepository;
+            _mapper = mapper;
         }
 
-        public async Task<(List<Customer>, PaginationMeta)> GetAllCustomers(
+        public async Task<ResponsePaginateDTO<ResponseCustomerDTO>> GetAllCustomers(
             int pageNumber,
             int pageSize
         )
         {
-            return await _customerRepository.GetAllCustomers(pageNumber, pageSize);
+            (List<Customer>, PaginationMeta) customers = await _customerRepository.GetAllCustomers(
+                pageNumber,
+                pageSize
+            );
+
+            var (Data, PaginationMeta) = customers;
+
+            ResponsePaginateDTO<ResponseCustomerDTO> responsePaginateDTO =
+                new()
+                {
+                    Data = _mapper.Map<List<ResponseCustomerDTO>>(Data),
+                    PaginationMeta = PaginationMeta
+                };
+
+            return responsePaginateDTO;
         }
 
-        public async Task<Customer> GetCustomerById(int id)
+        public async Task<ResponseCustomerDTO> GetCustomerById(int id)
         {
-            return await _customerRepository.GetCustomerById(id);
+            Customer customer = await _customerRepository.GetCustomerById(id);
+
+            return _mapper.Map<ResponseCustomerDTO>(customer);
         }
 
-        public async Task<Customer> AddCustomer(Customer customer)
+        public async Task<ResponseCustomerDTO> AddCustomer(CreateCustomerDTO createCustomerDTO)
         {
             Customer? customerVerification = _customerRepository.Find(
                 x =>
-                    x.Email == customer.Email
-                    || x.Document.TaxNumber == customer.Document.TaxNumber,
+                    x.Email == createCustomerDTO.Email
+                    || x.Document.TaxNumber == createCustomerDTO.Document.TaxNumber,
                 x => x.Document
             );
 
             if (customerVerification != null)
             {
-                if (customer.Document.TaxNumber == customerVerification.Document.TaxNumber)
+                if (createCustomerDTO.Document.TaxNumber == customerVerification.Document.TaxNumber)
                     throw new Exception("O cpf já está em uso.");
 
-                if (customer.Email == customerVerification.Email)
+                if (createCustomerDTO.Email == customerVerification.Email)
                     throw new Exception("O email já está em uso.");
             }
 
             var password = _securityService.GenerateRandomPassword(8);
             var hash = _securityService.HashPassword(password, out var salt);
 
-            var newCustomer = await _customerRepository.AddCustomer(customer);
+            Customer mappedCustomer = _mapper.Map<Customer>(createCustomerDTO);
+
+            var newCustomer = await _customerRepository.AddCustomer(mappedCustomer);
 
             Login login =
                 new()
                 {
-                    Email = customer.Email,
+                    Email = createCustomerDTO.Email,
                     UserType = Enums.UserType.Customer,
                     ParentId = newCustomer.Id,
                     PasswordHash = hash,
@@ -71,17 +96,21 @@ namespace Rent.Domain.Services
 
             await _loginRepository.AddLogin(login);
 
-            return newCustomer;
+            return _mapper.Map<ResponseCustomerDTO>(newCustomer);
         }
 
-        public async Task<Customer> UpdateCustomer(Customer customer)
+        public async Task<ResponseCustomerDTO> UpdateCustomer(UpdateCustomerDTO updateCustomerDTO)
         {
-            return await _customerRepository.AddCustomer(customer);
+            Customer mappedCustomer = _mapper.Map<Customer>(updateCustomerDTO);
+
+            var updatedCustomer = await _customerRepository.UpdateCustomer(mappedCustomer);
+
+            return _mapper.Map<ResponseCustomerDTO>(updatedCustomer);
         }
 
-        public async Task DeleteCustomer(int id)
+        public async Task<bool> DeleteCustomer(int id)
         {
-            await _customerRepository.GetCustomerById(id);
+            return await _customerRepository.DeleteCustomer(id);
         }
     }
 }

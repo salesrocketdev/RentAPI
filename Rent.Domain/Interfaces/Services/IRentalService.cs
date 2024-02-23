@@ -1,13 +1,14 @@
-﻿using Rent.Core.Models;
-using Rent.Domain.Entities;
+﻿using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 
 namespace Rent.Domain.Interfaces.Services
 {
     public interface IRentalService
     {
-        Task<(List<Rental>, PaginationMeta)> GetAllRentals(int pageNumber, int pageSize);
-        Task<Rental> GetRentalById(int id);
-        Task<Rental> AddRental(Rental rental);
-        Task<Rental> UpdateRental(Rental rental);
+        Task<ResponsePaginateDTO<ResponseRentalDTO>> GetAllRentals(int pageNumber, int pageSize);
+        Task<ResponseRentalDTO> GetRentalById(int id);
+        Task<ResponseRentalDTO> AddRental(CreateRentalDTO createRentalDTO);
+        Task<ResponseRentalDTO> UpdateRental(UpdateRentalDTO updateRentalDTO);
     }
 }
