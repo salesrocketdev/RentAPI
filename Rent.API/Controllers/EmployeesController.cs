@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
+using Rent.Core.Response.Result;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
-using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -18,12 +17,10 @@ namespace Rent.API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
-        private readonly IMapper _mapper;
 
-        public EmployeesController(IEmployeeService employeeService, IMapper mapper)
+        public EmployeesController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
-            _mapper = mapper;
         }
 
         [Authorize(Roles = "Owner")]
@@ -39,29 +36,23 @@ namespace Rent.API.Controllers
         {
             try
             {
-                var (employees, pagination) = await _employeeService.GetAllEmployees(
-                    pageNumber,
-                    pageSize
-                );
-                List<ResponseEmployeeDTO> employeeDTOs = _mapper.Map<List<ResponseEmployeeDTO>>(
-                    employees
-                );
+                ResponsePaginateDTO<ResponseEmployeeDTO> responsePaginateDTO =
+                    await _employeeService.GetAllEmployees(pageNumber, pageSize);
 
                 ApiResponse<List<ResponseEmployeeDTO>> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = employeeDTOs,
-                        Pagination = pagination
+                        Data = responsePaginateDTO.Data,
+                        Pagination = responsePaginateDTO.PaginationMeta
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<List<ResponseEmployeeDTO>> response =
-                    new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return Ok(response);
             }
@@ -77,23 +68,23 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Employee employee = await _employeeService.GetEmployeeById(id);
-                ResponseEmployeeDTO employeeDTO = _mapper.Map<ResponseEmployeeDTO>(employee);
+                ResponseEmployeeDTO responseEmployeeDTO = await _employeeService.GetEmployeeById(
+                    id
+                );
 
-                ApiResponse<ResponseEmployeeDTO> response =
+                ApiResultResponse<ResponseEmployeeDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = employeeDTO
+                        Data = responseEmployeeDTO
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseEmployeeDTO> response =
-                    new() { Code = 0, Message = ex.Message };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -111,16 +102,16 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Employee mappedEmployee = _mapper.Map<Employee>(createEmployeeDTO);
+                ResponseEmployeeDTO createdEmployee = await _employeeService.AddEmployee(
+                    createEmployeeDTO
+                );
 
-                Employee createdEmployee = await _employeeService.AddEmployee(mappedEmployee);
-
-                ApiResponse<ResponseEmployeeDTO> response =
+                ApiResultResponse<ResponseEmployeeDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = _mapper.Map<ResponseEmployeeDTO>(createdEmployee)
+                        Data = createdEmployee
                     };
 
                 return Ok(response);
@@ -144,24 +135,23 @@ namespace Rent.API.Controllers
         {
             try
             {
-                Employee mappedEmployee = _mapper.Map<Employee>(updateEmployeeDTO);
+                ResponseEmployeeDTO updatedEmployee = await _employeeService.UpdateEmployee(
+                    updateEmployeeDTO
+                );
 
-                Employee updatedEmployee = await _employeeService.UpdateEmployee(mappedEmployee);
-
-                ApiResponse<ResponseEmployeeDTO> response =
+                ApiResultResponse<ResponseEmployeeDTO> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = _mapper.Map<ResponseEmployeeDTO>(updatedEmployee)
+                        Data = updatedEmployee
                     };
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseEmployeeDTO> response =
-                    new() { Code = 0, Message = ex.Message, };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }
@@ -186,8 +176,7 @@ namespace Rent.API.Controllers
             }
             catch (Exception ex)
             {
-                ApiResponse<ResponseEmployeeDTO> response =
-                    new() { Code = 0, Message = ex.Message };
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
 
                 return BadRequest(response);
             }

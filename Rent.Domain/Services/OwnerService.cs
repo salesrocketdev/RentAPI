@@ -1,42 +1,75 @@
-﻿using Rent.Domain.Interfaces.Repositories;
-using Rent.Domain.Interfaces.Services;
-using Rent.Domain.Entities;
+﻿using AutoMapper;
 using Rent.Core.Models;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
+using Rent.Domain.Entities;
+using Rent.Domain.Interfaces.Repositories;
+using Rent.Domain.Interfaces.Services;
 
 namespace Rent.Domain.Services
 {
     public class OwnerService : IOwnerService
     {
         private readonly IOwnerRepository _ownerRepository;
+        private readonly IMapper _mapper;
 
-        public OwnerService(IOwnerRepository ownerRepository)
+        public OwnerService(IOwnerRepository ownerRepository, IMapper mapper)
         {
             _ownerRepository = ownerRepository;
+            _mapper = mapper;
         }
 
-        public async Task<(List<Owner>, PaginationMeta)> GetAllOwners(int pageNumber, int pageSize)
+        public async Task<ResponsePaginateDTO<ResponseOwnerDTO>> GetAllOwners(
+            int pageNumber,
+            int pageSize
+        )
         {
-            return await _ownerRepository.GetAllOwners(pageNumber, pageSize);
+            (List<Owner>, PaginationMeta) customers = await _ownerRepository.GetAllOwners(
+                pageNumber,
+                pageSize
+            );
+
+            var (Data, PaginationMeta) = customers;
+
+            ResponsePaginateDTO<ResponseOwnerDTO> responsePaginateDTO =
+                new()
+                {
+                    Data = _mapper.Map<List<ResponseOwnerDTO>>(Data),
+                    PaginationMeta = PaginationMeta
+                };
+
+            return responsePaginateDTO;
         }
 
-        public async Task<Owner> GetOwnerById(int id)
+        public async Task<ResponseOwnerDTO> GetOwnerById(int id)
         {
-            return await _ownerRepository.GetOwnerById(id);
+            Owner owner = await _ownerRepository.GetOwnerById(id);
+
+            return _mapper.Map<ResponseOwnerDTO>(owner);
         }
 
-        public async Task<Owner> AddOwner(Owner owner)
+        public async Task<ResponseOwnerDTO> AddOwner(CreateOwnerDTO createOwnerDTO)
         {
-            return await _ownerRepository.AddOwner(owner);
+            Owner mappedOwner = _mapper.Map<Owner>(createOwnerDTO);
+
+            var newOwner = await _ownerRepository.AddOwner(mappedOwner);
+
+            return _mapper.Map<ResponseOwnerDTO>(newOwner);
         }
 
-        public async Task<Owner> UpdateOwner(Owner owner)
+        public async Task<ResponseOwnerDTO> UpdateOwner(UpdateOwnerDTO updateOwnerDTO)
         {
-            return await _ownerRepository.AddOwner(owner);
+            Owner mappedOwner = _mapper.Map<Owner>(updateOwnerDTO);
+
+            var updatedOwner = await _ownerRepository.UpdateOwner(mappedOwner);
+
+            return _mapper.Map<ResponseOwnerDTO>(updatedOwner);
         }
 
-        public async Task DeleteOwner(int id)
+        public async Task<bool> DeleteOwner(int id)
         {
-            await _ownerRepository.GetOwnerById(id);
+            return await _ownerRepository.DeleteOwner(id);
         }
     }
 }

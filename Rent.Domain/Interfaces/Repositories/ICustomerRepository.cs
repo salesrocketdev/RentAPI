@@ -10,6 +10,6 @@ namespace Rent.Domain.Interfaces.Repositories
         Task<Customer> GetCustomerByEmailOrTaxNumber(string email, string taxNumber);
         Task<Customer> AddCustomer(Customer customer);
         Task<Customer> UpdateCustomer(Customer customer);
-        Task DeleteCustomer(int id);
+        Task<bool> DeleteCustomer(int id);
     }
 }

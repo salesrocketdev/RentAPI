@@ -1,14 +1,13 @@
-﻿namespace Rent.Domain.DTO.Response
+﻿using Rent.Core.Models;
+
+namespace Rent.Domain.DTO.Response
 {
-    public class ResponseCustomerDTO
+    public class ResponseCustomerDTO : BaseDTO
     {
-        public int Id { get; set; }
         public string? Name { get; set; }
         public int Age { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
         public DocumentDTO? Document { get; set; }
     }
 }
