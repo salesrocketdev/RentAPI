@@ -20,7 +20,10 @@ namespace Rent.Infrastructure.Repositories
             int totalItems = query.Count();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            var cars = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            List<Car> cars = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var pagination = new PaginationMeta
             {

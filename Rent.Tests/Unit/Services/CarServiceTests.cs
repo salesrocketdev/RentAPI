@@ -5,7 +5,7 @@ using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
 using Rent.Domain.Services;
 
-namespace Rent.Tests.Services
+namespace Rent.Tests.Unit.Services
 {
     public class CarServiceTests
     {

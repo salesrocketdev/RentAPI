@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Rent.Core.Models;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
@@ -26,24 +29,51 @@ namespace Rent.Domain.Services
             _mapper = mapper;
         }
 
-        public async Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize)
+        public async Task<ResponsePaginateDTO<ResponseCarDTO>> GetAllCars(
+            int pageNumber,
+            int pageSize
+        )
         {
-            return await _carRepository.GetAllCars(pageNumber, pageSize);
+            (List<Car>, PaginationMeta) cars = await _carRepository.GetAllCars(
+                pageNumber,
+                pageSize
+            );
+
+            var (Data, PaginationMeta) = cars;
+
+            ResponsePaginateDTO<ResponseCarDTO> responsePaginateDTO =
+                new()
+                {
+                    Data = _mapper.Map<List<ResponseCarDTO>>(Data),
+                    PaginationMeta = PaginationMeta
+                };
+
+            return responsePaginateDTO;
         }
 
-        public async Task<Car> GetCarById(int id)
+        public async Task<ResponseCarDTO> GetCarById(int id)
         {
-            return await _carRepository.GetCarById(id);
+            Car car = await _carRepository.GetCarById(id);
+
+            return _mapper.Map<ResponseCarDTO>(car);
         }
 
-        public async Task<Car> AddCar(Car car)
+        public async Task<ResponseCarDTO> AddCar(CreateCarDTO createCarDTO)
         {
-            return await _carRepository.AddCar(car);
+            Car mappedCar = _mapper.Map<Car>(createCarDTO);
+
+            var newCar = await _carRepository.AddCar(mappedCar);
+
+            return _mapper.Map<ResponseCarDTO>(newCar);
         }
 
-        public async Task<Car> UpdateCar(Car car)
+        public async Task<ResponseCarDTO> UpdateCar(UpdateCarDTO updateCarDTO)
         {
-            return await _carRepository.UpdateCar(car);
+            Car mappedCar = _mapper.Map<Car>(updateCarDTO);
+
+            var updatedCar = await _carRepository.UpdateCar(mappedCar);
+
+            return _mapper.Map<ResponseCarDTO>(updatedCar);
         }
 
         public async Task UploadImage(int carId, MemoryStream memoryStream)

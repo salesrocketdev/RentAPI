@@ -1,4 +1,8 @@
-﻿using Rent.Core.Models;
+﻿using AutoMapper;
+using Rent.Core.Models;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
@@ -9,38 +13,70 @@ public class RentalService : IRentalService
 {
     private readonly ICarService _carService;
     private readonly IRentalRepository _rentalRepository;
+    private readonly IMapper _mapper;
 
-    public RentalService(ICarService carService, IRentalRepository rentalRepository)
+    public RentalService(ICarService carService, IRentalRepository rentalRepository, IMapper mapper)
     {
         _carService = carService;
         _rentalRepository = rentalRepository;
+        _mapper = mapper;
     }
 
-    public async Task<(List<Rental>, PaginationMeta)> GetAllRentals(int pageNumber, int pageSize)
+    public async Task<ResponsePaginateDTO<ResponseRentalDTO>> GetAllRentals(
+        int pageNumber,
+        int pageSize
+    )
     {
-        return await _rentalRepository.GetAllRentals(pageNumber, pageSize);
+        (List<Rental>, PaginationMeta) employees = await _rentalRepository.GetAllRentals(
+            pageNumber,
+            pageSize
+        );
+
+        var (Data, PaginationMeta) = employees;
+
+        ResponsePaginateDTO<ResponseRentalDTO> responsePaginateDTO =
+            new()
+            {
+                Data = _mapper.Map<List<ResponseRentalDTO>>(Data),
+                PaginationMeta = PaginationMeta
+            };
+
+        return responsePaginateDTO;
     }
 
-    public async Task<Rental> GetRentalById(int id)
+    public async Task<ResponseRentalDTO> GetRentalById(int id)
     {
-        return await _rentalRepository.GetRentalById(id);
+        Rental rental = await _rentalRepository.GetRentalById(id);
+
+        return _mapper.Map<ResponseRentalDTO>(rental);
     }
 
-    public async Task<Rental> AddRental(Rental rental)
+    public async Task<ResponseRentalDTO> AddRental(CreateRentalDTO createRentalDTO)
     {
-        var car = await _carService.GetCarById(rental.CarId);
+        ResponseCarDTO responseCar = await _carService.GetCarById(createRentalDTO.CarId);
 
-        if (car.Available == false)
+        if (responseCar.Available == false)
             throw new Exception("Car already rented.");
-        else car.Available = false;
+        else
+            responseCar.Available = false;
 
-        await _carService.UpdateCar(car);
+        UpdateCarDTO updatedCar = _mapper.Map<UpdateCarDTO>(responseCar);
 
-        return await _rentalRepository.AddRental(rental);
+        await _carService.UpdateCar(updatedCar);
+
+        Rental mappedEmployee = _mapper.Map<Rental>(createRentalDTO);
+
+        var newRental = await _rentalRepository.AddRental(mappedEmployee);
+
+        return _mapper.Map<ResponseRentalDTO>(newRental);
     }
 
-    public async Task<Rental> UpdateRental(Rental rental)
+    public async Task<ResponseRentalDTO> UpdateRental(UpdateRentalDTO updateRentalDTO)
     {
-        return await _rentalRepository.UpdateRental(rental);
+        Rental rental = _mapper.Map<Rental>(updateRentalDTO);
+
+        var updatedRental = await _rentalRepository.UpdateRental(rental);
+
+        return _mapper.Map<ResponseRentalDTO>(updatedRental);
     }
 }

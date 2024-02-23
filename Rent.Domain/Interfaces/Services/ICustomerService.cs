@@ -1,14 +1,18 @@
-﻿using Rent.Core.Models;
-using Rent.Domain.Entities;
+﻿using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 
 namespace Rent.Domain.Interfaces.Services
 {
     public interface ICustomerService
     {
-        Task<(List<Customer>, PaginationMeta)> GetAllCustomers(int pageNumber, int pageSize);
-        Task<Customer> GetCustomerById(int id);
-        Task<Customer> AddCustomer(Customer customer);
-        Task<Customer> UpdateCustomer(Customer customer);
-        Task DeleteCustomer(int id);
+        Task<ResponsePaginateDTO<ResponseCustomerDTO>> GetAllCustomers(
+            int pageNumber,
+            int pageSize
+        );
+        Task<ResponseCustomerDTO> GetCustomerById(int id);
+        Task<ResponseCustomerDTO> AddCustomer(CreateCustomerDTO createCustomerDTO);
+        Task<ResponseCustomerDTO> UpdateCustomer(UpdateCustomerDTO updateCustomerDTO);
+        Task<bool> DeleteCustomer(int id);
     }
 }

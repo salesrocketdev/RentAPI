@@ -89,7 +89,7 @@ namespace Rent.Infrastructure.Repositories
             return query;
         }
 
-        public async Task DeleteCustomer(int id)
+        public async Task<bool> DeleteCustomer(int id)
         {
             var query =
                 await _context.Customers.FindAsync(id)
@@ -97,7 +97,7 @@ namespace Rent.Infrastructure.Repositories
 
             query.IsDeleted = true;
 
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

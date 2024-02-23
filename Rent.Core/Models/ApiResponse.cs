@@ -6,5 +6,10 @@
         public string? Message { get; set; }
         public T? Data { get; set; }
         public PaginationMeta? Pagination { get; set; }
+
+        public ApiResponse()
+        {
+            Data = default!;
+        }
     }
 }

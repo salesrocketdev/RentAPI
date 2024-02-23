@@ -64,12 +64,14 @@ namespace Rent.Infrastructure.Repositories
             return query;
         }
 
-        public async Task DeleteOwner(int id)
+        public async Task<bool> DeleteOwner(int id)
         {
             var query =
                 await _context.Owners.FindAsync(id) ?? throw new Exception("Owner not found.");
-            _context.Owners.Remove(query);
-            await _context.SaveChangesAsync();
+
+            query.IsDeleted = true;
+
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

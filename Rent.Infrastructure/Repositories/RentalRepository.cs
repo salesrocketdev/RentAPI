@@ -44,8 +44,7 @@ public class RentalRepository : BaseRepository<Rental>, IRentalRepository
             .ThenInclude(c => c.Document)
             .Include(x => x.Employee)
             .Include(x => x.Car)
-            .Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive == true && x.IsDeleted == false);
 
         return customer ?? throw new Exception("Rental not found");
     }

@@ -71,14 +71,15 @@ namespace Rent.Infrastructure.Repositories
             return query;
         }
 
-        public async Task DeleteEmployee(int id)
+        public async Task<bool> DeleteEmployee(int id)
         {
             var query =
                 await _context.Employees.FindAsync(id)
                 ?? throw new Exception("Employee not found.");
+
             query.IsDeleted = true;
 
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

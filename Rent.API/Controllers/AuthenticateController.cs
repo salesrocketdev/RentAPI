@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Rent.API.Controllers
 {
@@ -37,19 +37,19 @@ namespace Rent.API.Controllers
             Summary = "Realizar autenticação.",
             Description = "Realiza a autenticação com um usuário já registrado e retorna um token JWT."
         )]
-        public async Task<ActionResult> AuthenticateUser([FromBody] AuthenticateDTO authenticateDTO)
+        public async Task<ActionResult> AuthenticateUser(AuthenticateDTO authenticateDTO)
         {
             try
             {
                 if (authenticateDTO.Email == null || authenticateDTO.Password == null)
                     throw new Exception("Por favor informe um email e senha");
 
-                var token = await _authenticationService.Authenticate(
+                ResponseTokenDTO responseToken = await _authenticationService.Authenticate(
                     authenticateDTO.Email,
                     authenticateDTO.Password
                 );
 
-                return Ok(token);
+                return Ok(responseToken);
             }
             catch (Exception ex)
             {
@@ -68,7 +68,8 @@ namespace Rent.API.Controllers
             try
             {
                 // Extrair o token do header de autorização
-                string? token = HttpContext.Request.Headers["Authorization"]
+                string? token = HttpContext
+                    .Request.Headers["Authorization"]
                     .FirstOrDefault()
                     ?.Replace("Bearer ", "");
 
@@ -123,7 +124,8 @@ namespace Rent.API.Controllers
             try
             {
                 // Extrair o token do header de autorização
-                string? token = HttpContext.Request.Headers["Authorization"]
+                string? token = HttpContext
+                    .Request.Headers["Authorization"]
                     .FirstOrDefault()
                     ?.Replace("Bearer ", "");
 
@@ -151,7 +153,8 @@ namespace Rent.API.Controllers
         public async Task<IActionResult> Logout()
         {
             // Extrair o token do header de autorização
-            string? token = HttpContext.Request.Headers["Authorization"]
+            string? token = HttpContext
+                .Request.Headers["Authorization"]
                 .FirstOrDefault()
                 ?.Split(" ")
                 .Last();
@@ -175,7 +178,6 @@ namespace Rent.API.Controllers
                     ExpirationDate = jwtToken.ValidTo
                 };
 
-                // Adicione o token revogado à lista de tokens revogados
                 await _authenticationService.RevokeToken(revokedToken);
 
                 return Ok("Logout realizado com sucesso.");

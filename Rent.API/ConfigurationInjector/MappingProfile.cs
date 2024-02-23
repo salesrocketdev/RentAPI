@@ -52,8 +52,8 @@ namespace Rent.API.ConfigurationInjector
             // CreateMap<ResponseCustomerDTO, Customer>()
             //     .ForMember(dest => dest.Document.CustomerId, opt => opt.MapFrom(src => src.Id));
             CreateMap<ResponseEmployeeDTO, Employee>();
-            CreateMap<OwnerDTO, Owner>();
-            CreateMap<RentalDTO, Rental>();
+            CreateMap<ResponseOwnerDTO, Owner>();
+            CreateMap<ResponseRentalDTO, Rental>();
             CreateMap<DocumentDTO, Document>();
             CreateMap<LoginRequest, Login>();
             CreateMap<LoginDTO, Login>();
@@ -65,8 +65,8 @@ namespace Rent.API.ConfigurationInjector
             CreateMap<CarImage, CarImageDTO>();
             CreateMap<Customer, ResponseCustomerDTO>();
             CreateMap<Employee, ResponseEmployeeDTO>();
-            CreateMap<Owner, OwnerDTO>();
-            CreateMap<Rental, RentalDTO>();
+            CreateMap<Owner, ResponseOwnerDTO>();
+            CreateMap<Rental, ResponseRentalDTO>();
             CreateMap<Document, DocumentDTO>();
             CreateMap<Login, LoginRequest>();
             CreateMap<Login, LoginDTO>();
