@@ -62,13 +62,16 @@ namespace Rent.API.Controllers
             Summary = "Obter administrador por ID.",
             Description = "Retorna um administrador específico com base no seu ID."
         )]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ResponseOwnerDTO>> GetOwnerById(int id)
         {
             try
             {
                 ResponseOwnerDTO responseOwnerDTO = await _ownerService.GetOwnerById(id);
 
-                ApiResponse<ResponseOwnerDTO> response =
+                ApiResultResponse<ResponseOwnerDTO> response =
                     new()
                     {
                         Code = 1,
