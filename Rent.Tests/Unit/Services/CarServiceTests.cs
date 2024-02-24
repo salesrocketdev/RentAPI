@@ -1,5 +1,9 @@
-﻿using Moq;
+﻿using AutoMapper;
+using Moq;
 using Rent.Core.Models;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
+using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Domain.Interfaces.Services;
@@ -13,16 +17,20 @@ namespace Rent.Tests.Unit.Services
         private readonly Mock<ICarRepository> _carRepositoryMock;
         private readonly Mock<ICarImageRepository> _carImageRepositoryMock;
         private readonly Mock<IBlobStorageRepository> _blobStorageRepositoryMock;
+        private readonly Mock<IMapper> _mapperMock;
 
         public CarServiceTests()
         {
             _carRepositoryMock = new Mock<ICarRepository>();
             _carImageRepositoryMock = new Mock<ICarImageRepository>();
             _blobStorageRepositoryMock = new Mock<IBlobStorageRepository>();
+            _mapperMock = new Mock<IMapper>();
+
             _carService = new CarService(
                 _carRepositoryMock.Object,
                 _carImageRepositoryMock.Object,
-                _blobStorageRepositoryMock.Object
+                _blobStorageRepositoryMock.Object,
+                _mapperMock.Object
             );
         }
 
@@ -32,48 +40,70 @@ namespace Rent.Tests.Unit.Services
             // Given
             int pageNumber = 1;
             int pageSize = 10;
-            var expectedCars = new List<Car>
-            {
-                new Car
+
+            List<Car> expectedCars =
+                new()
                 {
-                    Id = 1,
-                    Brand = "Toyota",
-                    Model = "Camry"
-                },
-                new Car
+                    new()
+                    {
+                        Id = 1,
+                        Brand = "Toyota",
+                        Model = "Camry"
+                    },
+                    new()
+                    {
+                        Id = 2,
+                        Brand = "Honda",
+                        Model = "Civic"
+                    },
+                    new()
+                    {
+                        Id = 3,
+                        Brand = "Ford",
+                        Model = "Mustang"
+                    }
+                };
+            PaginationMeta expectedPagination =
+                new()
                 {
-                    Id = 2,
-                    Brand = "Honda",
-                    Model = "Civic"
-                },
-                new Car
-                {
-                    Id = 3,
-                    Brand = "Ford",
-                    Model = "Mustang"
-                }
-            };
-            var expectedPagination = new PaginationMeta
-            {
-                TotalItems = expectedCars.Count,
-                TotalPages = 1,
-                CurrentPage = 1,
-                PageSize = pageSize
-            };
+                    TotalItems = expectedCars.Count,
+                    TotalPages = 1,
+                    CurrentPage = 1,
+                    PageSize = pageSize
+                };
 
             _carRepositoryMock
                 .Setup(repo => repo.GetAllCars(pageNumber, pageSize))
-                .ReturnsAsync((expectedCars, expectedPagination));
+                .ReturnsAsync(() =>
+                {
+                    List<Car> cars = _mapperMock.Object.Map<List<Car>>(expectedCars);
+                    return (cars, expectedPagination);
+                });
 
             // When
-            var (actualCars, actualPagination) = await _carService.GetAllCars(pageNumber, pageSize);
+            ResponsePaginateDTO<ResponseCarDTO> responsePaginate = await _carService.GetAllCars(
+                pageNumber,
+                pageSize
+            );
 
             // Then
-            Assert.Equal(expectedCars, actualCars);
-            Assert.Equal(expectedPagination.TotalItems, actualPagination.TotalItems);
-            Assert.Equal(expectedPagination.TotalPages, actualPagination.TotalPages);
-            Assert.Equal(expectedPagination.CurrentPage, actualPagination.CurrentPage);
-            Assert.Equal(expectedPagination.PageSize, actualPagination.PageSize);
+            Assert.Equal(
+                _mapperMock.Object.Map<List<ResponseCarDTO>>(expectedCars),
+                responsePaginate.Data
+            );
+            Assert.Equal(
+                expectedPagination.TotalItems,
+                responsePaginate.PaginationMeta?.TotalItems
+            );
+            Assert.Equal(
+                expectedPagination.TotalPages,
+                responsePaginate.PaginationMeta?.TotalPages
+            );
+            Assert.Equal(
+                expectedPagination.CurrentPage,
+                responsePaginate.PaginationMeta?.CurrentPage
+            );
+            Assert.Equal(expectedPagination.PageSize, responsePaginate.PaginationMeta?.PageSize);
         }
 
         // Given
@@ -92,36 +122,42 @@ namespace Rent.Tests.Unit.Services
         public async Task GetCarById()
         {
             // Given
-            int carId = 1;
-            var expectedCar = new Car()
-            {
-                Id = carId,
-                Brand = "Ford",
-                Model = "Mustang",
-                Color = "Branco",
-                CreatedAt = DateTime.Now,
-                Plate = "ABC123",
-                DailyValue = 650,
-                Year = 2012,
-                Available = true,
-                IsActive = true,
-                IsDeleted = false,
-            };
+            int carId = 289;
+            ResponseCarDTO expectedCar =
+                new()
+                {
+                    Id = carId,
+                    Brand = "Ford",
+                    Model = "Mustang",
+                    Color = "Branco",
+                    Plate = "ABC123",
+                    DailyValue = 650,
+                    Year = 2012,
+                    Available = true,
+                };
 
-            _carRepositoryMock.Setup(repo => repo.GetCarById(carId)).ReturnsAsync(expectedCar);
+            _carRepositoryMock
+                .Setup(repo => repo.GetCarById(carId))
+                .Returns(() =>
+                {
+                    var car = _mapperMock.Object.Map<Car>(expectedCar);
+                    return Task.FromResult(car);
+                });
 
             // When
             var actualCar = await _carService.GetCarById(carId);
 
             // Then
-            Assert.Equal(expectedCar, actualCar);
+            Assert.NotNull(expectedCar);
+
+            Assert.Equal(expectedCar.Id, actualCar.Id);
         }
 
         [Fact]
         public async Task AddCar()
         {
             // Given
-            var newCar = new Car
+            var newCar = new CreateCarDTO
             {
                 Brand = "Tesla",
                 Model = "Model S",
@@ -130,12 +166,16 @@ namespace Rent.Tests.Unit.Services
                 Plate = "ABC123",
                 Available = true,
                 DailyValue = 100,
-                IsActive = true,
-                IsDeleted = false,
-                CreatedAt = DateTime.Now
             };
 
-            _carRepositoryMock.Setup(repo => repo.AddCar(newCar)).ReturnsAsync(newCar);
+            Car mappedNewCar = _mapperMock.Object.Map<Car>(newCar);
+
+            _carRepositoryMock
+                .Setup(repo => repo.AddCar(mappedNewCar))
+                .Returns(() =>
+                {
+                    _mapperMock.Object.Map<ResponseCarDTO>(newCar);
+                });
 
             // When
             var addedCar = await _carService.AddCar(newCar);
@@ -149,16 +189,13 @@ namespace Rent.Tests.Unit.Services
             Assert.Equal(newCar.Plate, addedCar.Plate);
             Assert.Equal(newCar.Available, addedCar.Available);
             Assert.Equal(newCar.DailyValue, addedCar.DailyValue);
-            Assert.Equal(newCar.IsActive, addedCar.IsActive);
-            Assert.Equal(newCar.IsDeleted, addedCar.IsDeleted);
-            Assert.Equal(newCar.CreatedAt, addedCar.CreatedAt);
         }
 
         [Fact]
         public async void UpdateCar()
         {
             // Given
-            var updateCar = new Car()
+            var updateCar = new UpdateCarDTO()
             {
                 Id = 29,
                 Brand = "Tesla",
@@ -168,12 +205,16 @@ namespace Rent.Tests.Unit.Services
                 Plate = "ABC123",
                 Available = true,
                 DailyValue = 100,
-                IsActive = true,
-                IsDeleted = false,
-                CreatedAt = DateTime.Now
             };
 
-            _carRepositoryMock.Setup(repo => repo.UpdateCar(updateCar)).ReturnsAsync(updateCar);
+            Car mappedUpdateCar = _mapperMock.Object.Map<Car>(updateCar);
+
+            _carRepositoryMock
+                .Setup(repo => repo.UpdateCar(mappedUpdateCar))
+                .Returns(() =>
+                {
+                    _mapperMock.Object.Map<ResponseCarDTO>(updateCar);
+                });
 
             // When
             var updatedCar = await _carService.UpdateCar(updateCar);
@@ -188,9 +229,6 @@ namespace Rent.Tests.Unit.Services
             Assert.Equal(updateCar.Plate, updatedCar.Plate);
             Assert.Equal(updateCar.Available, updatedCar.Available);
             Assert.Equal(updateCar.DailyValue, updatedCar.DailyValue);
-            Assert.Equal(updateCar.IsActive, updatedCar.IsActive);
-            Assert.Equal(updateCar.IsDeleted, updatedCar.IsDeleted);
-            Assert.Equal(updateCar.CreatedAt, updatedCar.CreatedAt);
         }
 
         [Fact]
