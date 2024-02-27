@@ -169,6 +169,34 @@ namespace Rent.Tests.Unit.Services
         }
 
         [Fact]
+        public async Task GetCarById_CarNotFound()
+        {
+            // Given
+            int nonExistentCarId = 999;
+            var expectedCar = new Car
+            {
+                Id = nonExistentCarId,
+                Brand = "Ford",
+                Model = "Mustang",
+                Color = "Branco",
+                Plate = "ABC123",
+                DailyValue = 650,
+                Year = 2012,
+                Available = true,
+            };
+
+            _carRepositoryMock
+                .Setup(repo => repo.GetCarById(nonExistentCarId))
+                .ReturnsAsync(expectedCar);
+
+            // Act
+            var result = await _carService.GetCarById(nonExistentCarId);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
         public async Task AddCar()
         {
             // Given
