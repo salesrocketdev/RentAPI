@@ -123,7 +123,18 @@ namespace Rent.Tests.Unit.Services
         {
             // Given
             int carId = 289;
-            ResponseCarDTO expectedCar =
+            var expectedCar = new Car
+            {
+                Id = carId,
+                Brand = "Ford",
+                Model = "Mustang",
+                Color = "Branco",
+                Plate = "ABC123",
+                DailyValue = 650,
+                Year = 2012,
+                Available = true,
+            };
+            ResponseCarDTO expectedDTO =
                 new()
                 {
                     Id = carId,
@@ -136,66 +147,96 @@ namespace Rent.Tests.Unit.Services
                     Available = true,
                 };
 
-            _carRepositoryMock
-                .Setup(repo => repo.GetCarById(carId))
-                .Returns(() =>
-                {
-                    var car = _mapperMock.Object.Map<Car>(expectedCar);
-                    return Task.FromResult(car);
-                });
+            _carRepositoryMock.Setup(repo => repo.GetCarById(carId)).ReturnsAsync(expectedCar);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<ResponseCarDTO>(expectedCar))
+                .Returns(expectedDTO);
 
             // When
-            var actualCar = await _carService.GetCarById(carId);
+            var result = await _carService.GetCarById(carId);
 
             // Then
-            Assert.NotNull(expectedCar);
-
-            Assert.Equal(expectedCar.Id, actualCar.Id);
+            Assert.NotNull(result);
+            Assert.Equal(expectedCar.Id, result.Id);
+            Assert.Equal(expectedCar.Brand, result.Brand);
+            Assert.Equal(expectedCar.Model, result.Model);
+            Assert.Equal(expectedCar.Color, result.Color);
+            Assert.Equal(expectedCar.Plate, result.Plate);
+            Assert.Equal(expectedCar.DailyValue, result.DailyValue);
+            Assert.Equal(expectedCar.Year, result.Year);
+            Assert.Equal(expectedCar.Available, result.Available);
         }
 
         [Fact]
         public async Task AddCar()
         {
             // Given
-            var newCar = new CreateCarDTO
+            var newCarDTO = new CreateCarDTO
             {
                 Brand = "Tesla",
                 Model = "Model S",
-                Color = "Black",
                 Year = 2022,
+                Color = "Black",
                 Plate = "ABC123",
-                Available = true,
                 DailyValue = 100,
+                Available = true,
             };
 
-            Car mappedNewCar = _mapperMock.Object.Map<Car>(newCar);
+            var expectedCarEntity = new Car()
+            {
+                Brand = "Tesla",
+                Model = "Model S",
+                Year = 2022,
+                Color = "Black",
+                Plate = "ABC123",
+                DailyValue = 100,
+                Available = true,
+            };
 
+            var expectedResponseCarDTO = new ResponseCarDTO()
+            {
+                Brand = "Tesla",
+                Model = "Model S",
+                Year = 2022,
+                Color = "Black",
+                Plate = "ABC123",
+                DailyValue = 100,
+                Available = true,
+            };
+
+            // Configurando o mapper para retornar o entity esperado
+            _mapperMock.Setup(m => m.Map<Car>(newCarDTO)).Returns(expectedCarEntity);
+
+            // Configurando o repositório para retornar o entity esperado
             _carRepositoryMock
-                .Setup(repo => repo.AddCar(mappedNewCar))
-                .Returns(() =>
-                {
-                    _mapperMock.Object.Map<ResponseCarDTO>(newCar);
-                });
+                .Setup(repo => repo.AddCar(expectedCarEntity))
+                .ReturnsAsync(expectedCarEntity);
+
+            // Configurando o mapper para retornar o DTO esperado quando o entity for passado
+            _mapperMock
+                .Setup(m => m.Map<ResponseCarDTO>(expectedCarEntity))
+                .Returns(expectedResponseCarDTO);
 
             // When
-            var addedCar = await _carService.AddCar(newCar);
+            var addedCar = await _carService.AddCar(newCarDTO);
 
             // Then
             Assert.NotNull(addedCar);
-            Assert.Equal(newCar.Brand, addedCar.Brand);
-            Assert.Equal(newCar.Model, addedCar.Model);
-            Assert.Equal(newCar.Color, addedCar.Color);
-            Assert.Equal(newCar.Year, addedCar.Year);
-            Assert.Equal(newCar.Plate, addedCar.Plate);
-            Assert.Equal(newCar.Available, addedCar.Available);
-            Assert.Equal(newCar.DailyValue, addedCar.DailyValue);
+            Assert.Equal(expectedResponseCarDTO.Brand, addedCar.Brand);
+            Assert.Equal(expectedResponseCarDTO.Model, addedCar.Model);
+            Assert.Equal(expectedResponseCarDTO.Color, addedCar.Color);
+            Assert.Equal(expectedResponseCarDTO.Year, addedCar.Year);
+            Assert.Equal(expectedResponseCarDTO.Plate, addedCar.Plate);
+            Assert.Equal(expectedResponseCarDTO.Available, addedCar.Available);
+            Assert.Equal(expectedResponseCarDTO.DailyValue, addedCar.DailyValue);
         }
 
         [Fact]
         public async void UpdateCar()
         {
             // Given
-            var updateCar = new UpdateCarDTO()
+            var updateCarDTO = new UpdateCarDTO()
             {
                 Id = 29,
                 Brand = "Tesla",
@@ -207,28 +248,53 @@ namespace Rent.Tests.Unit.Services
                 DailyValue = 100,
             };
 
-            Car mappedUpdateCar = _mapperMock.Object.Map<Car>(updateCar);
+            var expectedCarEntity = new Car()
+            {
+                Id = 29,
+                Brand = "Tesla",
+                Model = "Model S",
+                Color = "Black",
+                Year = 2022,
+                Plate = "ABC123",
+                Available = true,
+                DailyValue = 100,
+            };
+
+            var expectedResponseCarDTO = new ResponseCarDTO()
+            {
+                Id = 29,
+                Brand = "Tesla",
+                Model = "Model S",
+                Color = "Black",
+                Year = 2022,
+                Plate = "ABC123",
+                Available = true,
+                DailyValue = 100,
+            };
+
+            _mapperMock.Setup(m => m.Map<Car>(updateCarDTO)).Returns(expectedCarEntity);
 
             _carRepositoryMock
-                .Setup(repo => repo.UpdateCar(mappedUpdateCar))
-                .Returns(() =>
-                {
-                    _mapperMock.Object.Map<ResponseCarDTO>(updateCar);
-                });
+                .Setup(repo => repo.UpdateCar(expectedCarEntity))
+                .ReturnsAsync(expectedCarEntity);
+
+            _mapperMock
+                .Setup(m => m.Map<ResponseCarDTO>(expectedCarEntity))
+                .Returns(expectedResponseCarDTO);
 
             // When
-            var updatedCar = await _carService.UpdateCar(updateCar);
+            var updatedCar = await _carService.UpdateCar(updateCarDTO);
 
             // Then
             Assert.NotNull(updatedCar);
-            Assert.Equal(updateCar.Id, updatedCar.Id);
-            Assert.Equal(updateCar.Brand, updatedCar.Brand);
-            Assert.Equal(updateCar.Model, updatedCar.Model);
-            Assert.Equal(updateCar.Color, updatedCar.Color);
-            Assert.Equal(updateCar.Year, updatedCar.Year);
-            Assert.Equal(updateCar.Plate, updatedCar.Plate);
-            Assert.Equal(updateCar.Available, updatedCar.Available);
-            Assert.Equal(updateCar.DailyValue, updatedCar.DailyValue);
+            Assert.Equal(expectedResponseCarDTO.Id, updatedCar.Id);
+            Assert.Equal(expectedResponseCarDTO.Brand, updatedCar.Brand);
+            Assert.Equal(expectedResponseCarDTO.Model, updatedCar.Model);
+            Assert.Equal(expectedResponseCarDTO.Color, updatedCar.Color);
+            Assert.Equal(expectedResponseCarDTO.Year, updatedCar.Year);
+            Assert.Equal(expectedResponseCarDTO.Plate, updatedCar.Plate);
+            Assert.Equal(expectedResponseCarDTO.Available, updatedCar.Available);
+            Assert.Equal(expectedResponseCarDTO.DailyValue, updatedCar.DailyValue);
         }
 
         [Fact]
@@ -255,12 +321,11 @@ namespace Rent.Tests.Unit.Services
             _carRepositoryMock.Setup(repo => repo.DeleteCar(carToDelete.Id)).ReturnsAsync(true);
 
             // When
-            var result = await _carService.DeleteCar(carId);
+            var deletedCar = await _carService.DeleteCar(carId);
 
             // Then
-            Assert.True(result, "Delete operation should return true");
+            Assert.True(deletedCar, "Delete operation should return true");
 
-            // Verify that the delete method was called with the correct car
             _carRepositoryMock.Verify(repo => repo.DeleteCar(carToDelete.Id), Times.Once);
         }
     }
