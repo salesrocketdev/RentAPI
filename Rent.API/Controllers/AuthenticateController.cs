@@ -57,7 +57,6 @@ namespace Rent.API.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("Me")]
         [SwaggerOperation(
             Summary = "Buscar dados do usuário logado.",

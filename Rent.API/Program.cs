@@ -91,7 +91,7 @@ builder.Services.AddCors(options =>
         name: "RentOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+            policy.WithOrigins("http://localhost:5173").AllowAnyMethod().AllowAnyHeader();
         }
     )
 );

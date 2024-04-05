@@ -76,7 +76,9 @@ namespace Rent.Domain.Services
                     throw new Exception("O email já está em uso.");
             }
 
-            var password = _securityService.GenerateRandomPassword(8);
+            // var password = _securityService.GenerateRandomPassword(8);
+            string password = "12345678";
+
             var hash = _securityService.HashPassword(password, out var salt);
 
             Customer mappedCustomer = _mapper.Map<Customer>(createCustomerDTO);
