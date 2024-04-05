@@ -106,18 +106,6 @@ namespace Rent.Tests.Unit.Services
             Assert.Equal(expectedPagination.PageSize, responsePaginate.PaginationMeta?.PageSize);
         }
 
-        // Given
-        // Aqui você configuraria o estado inicial necessário para o teste,
-        // como criar instâncias de objetos ou configurar o ambiente de teste.
-
-        // When
-        // Aqui você chamaria o método que está sendo testado,
-        // fornecendo os dados de entrada necessários, como o ID do carro.
-
-        // Then
-        // Aqui você faria as asserções para verificar se o método
-        // GetCarById se comportou conforme o esperado, retornando o carro correto.
-
         [Fact]
         public async Task GetCarById()
         {

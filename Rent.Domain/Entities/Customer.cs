@@ -17,6 +17,7 @@ namespace Rent.Domain.Entities
         [Required(ErrorMessage = "O e-mail é obrigatório.")]
         [DataType(DataType.EmailAddress, ErrorMessage = "E-mail em formato inválido.")]
         public string? Email { get; set; }
+        public string? Address { get; set; }
 
         // Navigation properties
         public required Document Document { get; set; }
