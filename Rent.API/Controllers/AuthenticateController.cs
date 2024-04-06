@@ -1,6 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Rent.Core.Models;
+using Rent.Core.Response.Result;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
@@ -49,11 +51,21 @@ namespace Rent.API.Controllers
                     authenticateDTO.Password
                 );
 
-                return Ok(responseToken);
+                ApiResultResponse<ResponseTokenDTO> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Success.",
+                        Data = responseToken
+                    };
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
+
+                return BadRequest(response);
             }
         }
 
@@ -92,23 +104,32 @@ namespace Rent.API.Controllers
 
                 if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 2)))
                 {
-                    var owner = await _employeeService.GetEmployeeById(userMeta.ParentId);
+                    var employee = await _employeeService.GetEmployeeById(userMeta.ParentId);
 
-                    return Ok(owner);
+                    return Ok(employee);
                 }
 
                 if (userMeta.UserType.Equals(Enum.GetName(typeof(Domain.Enums.UserType), 3)))
                 {
-                    var owner = await _customerService.GetCustomerById(userMeta.ParentId);
+                    var customer = await _customerService.GetCustomerById(userMeta.ParentId);
 
-                    return Ok(owner);
+                    ApiResultResponse<ResponseCustomerDTO> response =
+                        new()
+                        {
+                            Code = 1,
+                            Message = "Success.",
+                            Data = customer
+                        };
+                    return Ok(response);
                 }
 
                 return BadRequest("Não encontrado.");
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                ApiErrorResponse response = new() { Code = 0, Message = ex.Message, };
+
+                return BadRequest(response);
             }
         }
 
