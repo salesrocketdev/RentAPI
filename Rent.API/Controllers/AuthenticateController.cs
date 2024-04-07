@@ -200,11 +200,21 @@ namespace Rent.API.Controllers
 
                 await _authenticationService.RevokeToken(revokedToken);
 
-                return Ok("Logout realizado com sucesso.");
+                ApiResultResponse<object> response =
+                    new()
+                    {
+                        Code = 1,
+                        Message = "Logout realizado com sucesso.",
+                        Data = null
+                    };
+
+                return Ok(response);
             }
             else
             {
-                return BadRequest("Falha ao realizar o logout.");
+                ApiErrorResponse response = new() { Code = 0, Message = "Falha ao realizar o logout.", };
+
+                return BadRequest(response);
             }
         }
     }

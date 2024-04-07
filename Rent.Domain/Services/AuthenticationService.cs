@@ -40,7 +40,7 @@ namespace Rent.Domain.Services
             );
 
             if (verificationResult == false)
-                throw new Exception("Senha incorreta.");
+                throw new Exception("Email ou senha incorretos.");
 
             string token = _tokenService.GenerateToken(login);
 
