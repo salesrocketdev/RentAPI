@@ -53,9 +53,10 @@ public class RentalService : IRentalService
 
     public async Task<ResponseRentalDTO> AddRental(CreateRentalDTO createRentalDTO)
     {
-        ResponseCarDTO responseCar =
-            await _carService.GetCarById(createRentalDTO.CarId)
-            ?? throw new Exception("Car not found.");
+        ResponseCarDTO responseCar = await _carService.GetCarById(createRentalDTO.CarId);
+
+        if (responseCar == null)
+            throw new Exception("Car not found.");
 
         if (responseCar.Available == false)
             throw new Exception("Car already rented.");

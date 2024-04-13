@@ -3,6 +3,7 @@ using Moq;
 using Rent.Core.Models;
 using Rent.Domain;
 using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
@@ -39,7 +40,7 @@ public class RentalServiceTests
         );
 
         _rentalService = new RentalService(
-            _carService,
+            _carServiceMock.Object,
             _rentalRepositoryMock.Object,
             _mapperMock.Object
         );
@@ -136,6 +137,7 @@ public class RentalServiceTests
             },
             Employee = new() { Name = "Carlos" }
         };
+
         ResponseRentalDTO expectedDTO =
             new()
             {
@@ -192,6 +194,7 @@ public class RentalServiceTests
 
         var expectedRentalEntity = new Rental()
         {
+            Id = 1,
             CarId = 300,
             CustomerId = 20,
             EmployeeId = 2,
@@ -201,8 +204,15 @@ public class RentalServiceTests
             Car = new()
             {
                 Id = 300,
-                Brand = "Toyota",
-                Model = "Corolla XLI",
+                Brand = "Ford",
+                CarImages = null,
+                Color = "Branco",
+                CreatedAt = DateTime.Now,
+                DailyValue = 650,
+                Model = "Mustang",
+                Plate = "ABC123",
+                UpdatedAt = DateTime.Now,
+                Year = 2024,
                 Available = true
             },
             Customer = new()
@@ -215,6 +225,7 @@ public class RentalServiceTests
 
         var expectedResponseRentalDTO = new ResponseRentalDTO()
         {
+            Id = 1,
             CarId = 300,
             CustomerId = 20,
             EmployeeId = 2,
@@ -224,8 +235,15 @@ public class RentalServiceTests
             Car = new()
             {
                 Id = 300,
-                Brand = "Toyota",
-                Model = "Corolla XLI",
+                Brand = "Ford",
+                CarImages = null,
+                Color = "Branco",
+                CreatedAt = DateTime.Now,
+                DailyValue = 650,
+                Model = "Mustang",
+                Plate = "ABC123",
+                UpdatedAt = DateTime.Now,
+                Year = 2024,
                 Available = true
             },
             Customer = new()
@@ -240,8 +258,23 @@ public class RentalServiceTests
         _mapperMock.Setup(m => m.Map<Rental>(newRentalDTO)).Returns(expectedRentalEntity);
 
         _carServiceMock
-            .Setup(service => service.GetCarById(It.IsAny<int>()))
-            .ReturnsAsync(new ResponseCarDTO { Id = newRentalDTO.CarId, Available = true });
+            .Setup(service => service.GetCarById(newRentalDTO.CarId))
+            .ReturnsAsync(
+                new ResponseCarDTO
+                {
+                    Id = newRentalDTO.CarId,
+                    Brand = "Ford",
+                    CarImages = null,
+                    Color = "Branco",
+                    CreatedAt = DateTime.Now,
+                    DailyValue = 650,
+                    Model = "Mustang",
+                    Plate = "ABC123",
+                    UpdatedAt = DateTime.Now,
+                    Year = 2024,
+                    Available = true
+                }
+            );
 
         // Configurando o repositório para retornar o entity esperado
         _rentalRepositoryMock
@@ -258,16 +291,133 @@ public class RentalServiceTests
 
         // Then
         Assert.NotNull(addedRental);
+        Assert.Equal(expectedResponseRentalDTO.CarId, addedRental.CarId);
+        Assert.Equal(expectedResponseRentalDTO.CustomerId, addedRental.CustomerId);
+        Assert.Equal(expectedResponseRentalDTO.EmployeeId, addedRental.EmployeeId);
+        Assert.Equal(expectedResponseRentalDTO.StartDate, addedRental.StartDate);
+        Assert.Equal(expectedResponseRentalDTO.EndDate, addedRental.EndDate);
+        Assert.Equal(expectedResponseRentalDTO.SecurityDeposit, addedRental.SecurityDeposit);
+        Assert.Equal(expectedResponseRentalDTO.Car.Id, addedRental.Car.Id);
+        Assert.Equal(expectedResponseRentalDTO.Car.Brand, addedRental.Car.Brand);
+        Assert.Equal(expectedResponseRentalDTO.Car.Model, addedRental.Car.Model);
+        Assert.Equal(expectedResponseRentalDTO.Customer.Name, addedRental.Customer.Name);
+        Assert.Equal(
+            expectedResponseRentalDTO.Customer.Document.TaxNumber,
+            addedRental.Customer.Document.TaxNumber
+        );
+        Assert.Equal(expectedResponseRentalDTO.Employee.Name, addedRental.Employee.Name);
     }
 
-    // [Fact]
-    // public async Task TryCreateRentalWithNotAvailableCar()
-    // {
-    //     // Given
-    //     int notAvailableCarId = 294;
+    [Fact]
+    public async Task UpdateRental()
+    {
+        // Given
+        var updatedRentalDTO = new UpdateRentalDTO()
+        {
+            Id = 1,
+            CarId = 300,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(3),
+        };
 
-    //     // When
+        var expectedRentalEntity = new Rental()
+        {
+            Id = 1,
+            CarId = 300,
+            CustomerId = 20,
+            EmployeeId = 2,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(3),
+            SecurityDeposit = 600,
+            Car = new()
+            {
+                Id = 300,
+                Brand = "Ford",
+                CarImages = null,
+                Color = "Branco",
+                CreatedAt = DateTime.Now,
+                DailyValue = 650,
+                Model = "Mustang",
+                Plate = "ABC123",
+                UpdatedAt = DateTime.Now,
+                Year = 2024,
+                Available = true
+            },
+            Customer = new()
+            {
+                Name = "Joseph",
+                Document = new() { TaxNumber = "123.456.789.10" }
+            },
+            Employee = new() { Name = "Carlos" }
+        };
 
-    //     // Then
-    // }
+        var expectedResponseRentalDTO = new ResponseRentalDTO()
+        {
+            Id = 1,
+            CarId = 300,
+            CustomerId = 20,
+            EmployeeId = 2,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(3),
+            SecurityDeposit = 600,
+            Car = new()
+            {
+                Id = 300,
+                Brand = "Ford",
+                CarImages = null,
+                Color = "Branco",
+                CreatedAt = DateTime.Now,
+                DailyValue = 650,
+                Model = "Mustang",
+                Plate = "ABC123",
+                UpdatedAt = DateTime.Now,
+                Year = 2024,
+                Available = true
+            },
+            Customer = new()
+            {
+                Name = "Joseph",
+                Document = new() { TaxNumber = "123.456.789.10" }
+            },
+            Employee = new() { Name = "Carlos" }
+        };
+
+        // Configurando o mapper para retornar o entity esperado
+        _mapperMock.Setup(m => m.Map<Rental>(updatedRentalDTO)).Returns(expectedRentalEntity);
+
+        _carServiceMock
+            .Setup(service => service.GetCarById(updatedRentalDTO.CarId))
+            .ReturnsAsync(
+                new ResponseCarDTO
+                {
+                    Id = updatedRentalDTO.CarId,
+                    Brand = "Ford",
+                    CarImages = null,
+                    Color = "Branco",
+                    CreatedAt = DateTime.Now,
+                    DailyValue = 650,
+                    Model = "Mustang",
+                    Plate = "ABC123",
+                    UpdatedAt = DateTime.Now,
+                    Year = 2024,
+                    Available = true
+                }
+            );
+
+        // Configurando o repositório para retornar o entity esperado
+        _rentalRepositoryMock
+            .Setup(repo => repo.UpdateRental(expectedRentalEntity))
+            .ReturnsAsync(expectedRentalEntity);
+
+        // Configurando o mapper para retornar o DTO esperado quando o entity for passado
+        _mapperMock
+            .Setup(m => m.Map<ResponseRentalDTO>(expectedRentalEntity))
+            .Returns(expectedResponseRentalDTO);
+
+        // When
+        var updatedRental = await _rentalService.UpdateRental(updatedRentalDTO);
+
+        // Then
+        Assert.NotNull(updatedRental);
+    }
 }
