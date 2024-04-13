@@ -9,6 +9,6 @@ namespace Rent.Domain.DTO.Request.Update
         public int Age { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
-        public DocumentDTO? Document { get; set; }
+        public required DocumentDTO Document { get; set; }
     }
 }

@@ -69,6 +69,9 @@ namespace Rent.Domain.Services
 
             if (customerVerification != null)
             {
+                if (createCustomerDTO.IsPasswordMatching() == false)
+                    throw new Exception("As senhas digitadas não coincidem.");
+
                 if (createCustomerDTO.Document.TaxNumber == customerVerification.Document.TaxNumber)
                     throw new Exception("O cpf já está em uso.");
 
@@ -77,9 +80,8 @@ namespace Rent.Domain.Services
             }
 
             // var password = _securityService.GenerateRandomPassword(8);
-            string password = "12345678";
 
-            var hash = _securityService.HashPassword(password, out var salt);
+            var hash = _securityService.HashPassword(createCustomerDTO.Password, out var salt);
 
             Customer mappedCustomer = _mapper.Map<Customer>(createCustomerDTO);
 

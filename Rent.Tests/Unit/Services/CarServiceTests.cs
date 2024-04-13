@@ -125,7 +125,7 @@ namespace Rent.Tests.Unit.Services
             ResponseCarDTO expectedDTO =
                 new()
                 {
-                    Id = carId,
+                    Id = expectedCar.Id,
                     Brand = "Ford",
                     Model = "Mustang",
                     Color = "Branco",

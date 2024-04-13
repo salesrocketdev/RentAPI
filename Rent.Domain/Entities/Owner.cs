@@ -1,5 +1,5 @@
-﻿using Rent.Core.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Rent.Core.Models;
 
 namespace Rent.Domain.Entities
 {

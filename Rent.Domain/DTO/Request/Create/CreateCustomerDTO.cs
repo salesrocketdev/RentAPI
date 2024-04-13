@@ -1,6 +1,4 @@
-﻿using Rent.Domain.DTO.Response;
-
-namespace Rent.Domain.DTO.Request.Create
+﻿namespace Rent.Domain.DTO.Request.Create
 {
     public class CreateCustomerDTO
     {
@@ -8,6 +6,13 @@ namespace Rent.Domain.DTO.Request.Create
         public int Age { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
-        public CreateDocumentDTO? Document { get; set; }
+        public string? Password { get; set; }
+        public string? PasswordConfirm { get; set; }
+        public required CreateDocumentDTO Document { get; set; }
+
+        public bool IsPasswordMatching()
+        {
+            return Password == PasswordConfirm;
+        }
     }
 }
