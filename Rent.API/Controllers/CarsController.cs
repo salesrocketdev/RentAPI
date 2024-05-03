@@ -28,6 +28,7 @@ namespace Rent.API.Controllers
             Description = "Este endpoint retorna uma lista de carros cadastrados no sistema."
         )]
         public async Task<ActionResult<ResponsePaginateDTO<ResponseCarDTO>>> GetAllCars(
+            int brandId = 0,
             int pageNumber = 1,
             int pageSize = 10
         )
@@ -35,7 +36,7 @@ namespace Rent.API.Controllers
             try
             {
                 ResponsePaginateDTO<ResponseCarDTO> responsePaginateDTO =
-                    await _carService.GetAllCars(pageNumber, pageSize);
+                    await _carService.GetAllCars(brandId, pageNumber, pageSize);
 
                 ApiResponse<List<ResponseCarDTO>> response =
                     new()

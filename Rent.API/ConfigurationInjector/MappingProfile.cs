@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Rent.Domain;
 using Rent.Domain.DTO.Request;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Request.Update;
@@ -13,6 +14,7 @@ namespace Rent.API.ConfigurationInjector
         {
             #region CreateDTO to Model
             CreateMap<CreateCarDTO, Car>();
+            CreateMap<CreateBrandDTO, Brand>();
             CreateMap<CreateEmployeeDTO, Employee>();
             CreateMap<CreateCustomerDTO, Customer>();
             CreateMap<CreateOwnerDTO, Owner>();
@@ -22,6 +24,7 @@ namespace Rent.API.ConfigurationInjector
 
             #region Model to CreateDTO
             CreateMap<Car, CreateCarDTO>();
+            CreateMap<Brand, CreateBrandDTO>();
             CreateMap<Employee, CreateEmployeeDTO>();
             CreateMap<Customer, CreateCustomerDTO>();
             CreateMap<Owner, CreateOwnerDTO>();
@@ -47,6 +50,7 @@ namespace Rent.API.ConfigurationInjector
 
             #region DTO to Model
             CreateMap<ResponseCarDTO, Car>();
+            CreateMap<ResponseBrandDTO, Brand>();
             CreateMap<CarImageDTO, CarImage>();
             CreateMap<ResponseCustomerDTO, Customer>();
             // CreateMap<ResponseCustomerDTO, Customer>()
@@ -62,6 +66,7 @@ namespace Rent.API.ConfigurationInjector
 
             #region Model to DTO
             CreateMap<Car, ResponseCarDTO>();
+            CreateMap<Brand, ResponseBrandDTO>();
             CreateMap<CarImage, CarImageDTO>();
             CreateMap<Customer, ResponseCustomerDTO>();
             CreateMap<Employee, ResponseEmployeeDTO>();

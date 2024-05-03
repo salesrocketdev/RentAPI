@@ -6,11 +6,12 @@ namespace Rent.Domain.Entities
 {
     public class Car : BaseModel
     {
-        [Required(ErrorMessage = "A marca do carro é obrigatória.")]
-        public string? Brand { get; set; }
-
         [Required(ErrorMessage = "O modelo do carro é obrigatório.")]
         public string? Model { get; set; }
+
+        [Required(ErrorMessage = "O id da marca é obrigatório.")]
+        [ForeignKey("Brand")]
+        public int BrandId { get; set; }
 
         [Range(1900, 2024, ErrorMessage = "O ano do carro deve estar entre 1900 e 2024.")]
         public int Year { get; set; }
@@ -29,6 +30,8 @@ namespace Rent.Domain.Entities
         public bool Available { get; set; }
 
         // Navigation properties
+        public virtual Brand? Brand { get; set; }
+
         public List<CarImage?>? CarImages { get; set; }
     }
 }
