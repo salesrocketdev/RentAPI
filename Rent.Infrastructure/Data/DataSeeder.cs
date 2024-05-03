@@ -23,7 +23,9 @@ namespace Rent.Infrastructure.Data
 
             var loginSeeder = services.GetRequiredService<LoginSeeder>();
             loginSeeder.Seed();
+
+            var brandSeeder = services.GetRequiredService<BrandSeeder>();
+            brandSeeder.Seed();
         }
     }
-
 }

@@ -11,11 +11,21 @@ namespace Rent.Infrastructure.Repositories
         public CarRepository(DataContext context)
             : base(context) { }
 
-        public async Task<(List<Car>, PaginationMeta)> GetAllCars(int pageNumber, int pageSize)
+        public async Task<(List<Car>, PaginationMeta)> GetAllCars(
+            int? brandId,
+            int pageNumber,
+            int pageSize
+        )
         {
             var query = _context
                 .Cars.Include(x => x.CarImages)
+                .Include(x => x.Brand)
                 .Where(x => x.IsActive == true && x.IsDeleted == false);
+
+            if (brandId != 0)
+            {
+                query = query.Where(x => x.BrandId == brandId);
+            }
 
             int totalItems = query.Count();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
@@ -40,6 +50,7 @@ namespace Rent.Infrastructure.Repositories
         {
             Car? car = await _context
                 .Cars.Include(x => x.CarImages)
+                .Include(x => x.Brand)
                 .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
 
@@ -60,7 +71,7 @@ namespace Rent.Infrastructure.Repositories
                 await _context.Cars.FindAsync(car.Id) ?? throw new Exception("Car not found.");
 
             query.Available = car.Available;
-            query.Brand = car.Brand;
+            query.BrandId = car.BrandId;
             query.Color = car.Color;
             query.Model = car.Model;
             query.Plate = car.Plate;

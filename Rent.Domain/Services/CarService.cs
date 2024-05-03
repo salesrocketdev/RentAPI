@@ -12,29 +12,34 @@ namespace Rent.Domain.Services
     public class CarService : ICarService
     {
         private readonly ICarRepository _carRepository;
+        private readonly IBrandRepository _brandRepository;
         private readonly ICarImageRepository _carImageRepository;
         private readonly IBlobStorageRepository _blobStorageRepository;
         private readonly IMapper _mapper;
 
         public CarService(
             ICarRepository carRepository,
+            IBrandRepository brandRepository,
             ICarImageRepository carImageRepository,
             IBlobStorageRepository blobStorageRepository,
             IMapper mapper
         )
         {
             _carRepository = carRepository;
+            _brandRepository = brandRepository;
             _carImageRepository = carImageRepository;
             _blobStorageRepository = blobStorageRepository;
             _mapper = mapper;
         }
 
         public async Task<ResponsePaginateDTO<ResponseCarDTO>> GetAllCars(
+            int? brandId,
             int pageNumber,
             int pageSize
         )
         {
             (List<Car>, PaginationMeta) cars = await _carRepository.GetAllCars(
+                brandId,
                 pageNumber,
                 pageSize
             );
@@ -61,6 +66,13 @@ namespace Rent.Domain.Services
         public async Task<ResponseCarDTO> AddCar(CreateCarDTO createCarDTO)
         {
             Car mappedCar = _mapper.Map<Car>(createCarDTO);
+
+            if (createCarDTO.BrandId == 0)
+            {
+                throw new Exception("BrandId is required.");
+            }
+
+            mappedCar.Brand = await _brandRepository.GetBrandById(createCarDTO.BrandId);
 
             var newCar = await _carRepository.AddCar(mappedCar);
 

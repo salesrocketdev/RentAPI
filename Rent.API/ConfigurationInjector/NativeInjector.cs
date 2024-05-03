@@ -25,9 +25,11 @@ namespace Rent.API.ConfigurationInjector
             services.AddTransient<DataSeeder>();
             services.AddTransient<LoginSeeder>();
             services.AddTransient<OwnerSeeder>();
+            services.AddTransient<BrandSeeder>();
 
             //Services
             services.AddTransient<ICarService, CarService>();
+            services.AddTransient<IBrandService, BrandService>();
             services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<ICustomerService, CustomerService>();
             services.AddTransient<IEmployeeService, EmployeeService>();
@@ -40,6 +42,7 @@ namespace Rent.API.ConfigurationInjector
 
             //Repositories
             services.AddScoped<ICarRepository, CarRepository>();
+            services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<ICarImageRepository, CarImageRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();

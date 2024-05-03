@@ -1,5 +1,4 @@
 using Rent.Domain.Entities;
-using Rent.Domain.Interfaces.Services;
 using Rent.Infrastructure.Data;
 
 namespace Rent.Infrastructure.Seeders

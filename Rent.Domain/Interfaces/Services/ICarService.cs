@@ -6,7 +6,11 @@ namespace Rent.Domain.Interfaces.Services
 {
     public interface ICarService
     {
-        Task<ResponsePaginateDTO<ResponseCarDTO>> GetAllCars(int pageNumber, int pageSize);
+        Task<ResponsePaginateDTO<ResponseCarDTO>> GetAllCars(
+            int? brandId,
+            int pageNumber,
+            int pageSize
+        );
         Task<ResponseCarDTO> GetCarById(int id);
         Task<ResponseCarDTO> AddCar(CreateCarDTO createCarDTO);
         Task<ResponseCarDTO> UpdateCar(UpdateCarDTO updateCarDTO);

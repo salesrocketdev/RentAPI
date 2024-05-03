@@ -60,6 +60,15 @@ namespace Rent.Domain.Services
 
         public async Task<ResponseCustomerDTO> AddCustomer(CreateCustomerDTO createCustomerDTO)
         {
+            if (string.IsNullOrEmpty(createCustomerDTO.Password))
+                throw new Exception("O campo 'senha' é obrigatório.");
+
+            if (string.IsNullOrEmpty(createCustomerDTO.PasswordConfirm))
+                throw new Exception("O campo 'confirmação de senha' é obrigatório.");
+
+            if (createCustomerDTO.IsPasswordMatching() == false)
+                throw new Exception("As senhas digitadas não coincidem.");
+
             Customer? customerVerification = _customerRepository.Find(
                 x =>
                     x.Email == createCustomerDTO.Email
@@ -69,9 +78,6 @@ namespace Rent.Domain.Services
 
             if (customerVerification != null)
             {
-                if (createCustomerDTO.IsPasswordMatching() == false)
-                    throw new Exception("As senhas digitadas não coincidem.");
-
                 if (createCustomerDTO.Document.TaxNumber == customerVerification.Document.TaxNumber)
                     throw new Exception("O cpf já está em uso.");
 
