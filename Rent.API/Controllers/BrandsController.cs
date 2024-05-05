@@ -1,13 +1,12 @@
-﻿using System.Web.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
 using Rent.Core.Response.Result;
-using Rent.Domain;
+using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Request.Update;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
-using HttpGetAttribute = Microsoft.AspNetCore.Mvc.HttpGetAttribute;
-using HttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
 
 namespace Rent.API.Controllers
 {

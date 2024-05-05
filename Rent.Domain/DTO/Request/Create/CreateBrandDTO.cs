@@ -1,4 +1,4 @@
-﻿namespace Rent.Domain;
+﻿namespace Rent.Domain.DTO.Request.Create;
 
 public class CreateBrandDTO
 {

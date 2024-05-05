@@ -70,13 +70,16 @@ namespace Rent.Infrastructure.Repositories
             var query =
                 await _context.Cars.FindAsync(car.Id) ?? throw new Exception("Car not found.");
 
-            query.Available = car.Available;
-            query.BrandId = car.BrandId;
-            query.Color = car.Color;
             query.Model = car.Model;
+            query.Year = car.Year;
+            query.Color = car.Color;
+            query.SeatsNumber = car.SeatsNumber;
             query.Plate = car.Plate;
             query.DailyValue = car.DailyValue;
-            query.Year = car.Year;
+            query.Available = car.Available;
+            query.BrandId = car.BrandId;
+            query.FuelType = car.FuelType;
+            query.TransmissionType = car.TransmissionType;
             query.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();

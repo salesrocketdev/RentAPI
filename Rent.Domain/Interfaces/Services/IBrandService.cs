@@ -1,4 +1,5 @@
-﻿using Rent.Domain.DTO.Response;
+﻿using Rent.Domain.DTO.Request.Create;
+using Rent.Domain.DTO.Response;
 
 namespace Rent.Domain.Interfaces.Services;
 

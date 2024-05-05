@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Rent.Core.Models;
+using Rent.Domain.Enums;
 
 namespace Rent.Domain.Entities
 {
@@ -19,6 +20,9 @@ namespace Rent.Domain.Entities
         [Required(ErrorMessage = "A cor do carro é obrigatória.")]
         public string? Color { get; set; }
 
+        [Required(ErrorMessage = "A quantidade de assentos é obrigatória.")]
+        public int SeatsNumber { get; set; }
+
         [Required(ErrorMessage = "O placa do carro é obrigatória.")]
         public string? Plate { get; set; }
 
@@ -28,6 +32,12 @@ namespace Rent.Domain.Entities
 
         [Required(ErrorMessage = "A disponibilidade do carro é obrigatória.")]
         public bool Available { get; set; }
+
+        [Required(ErrorMessage = "O TransmissionType é obrigatório.")]
+        public TransmissionType TransmissionType { get; set; }
+
+        [Required(ErrorMessage = "O FuelType é obrigatório.")]
+        public FuelType FuelType { get; set; }
 
         // Navigation properties
         public virtual Brand? Brand { get; set; }
