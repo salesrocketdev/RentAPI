@@ -23,7 +23,7 @@ namespace Rent.API.Controllers
         }
 
         [Authorize(Roles = "Owner, Employee, Customer")]
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         [SwaggerOperation(
             Summary = "Retorna todos as marcas cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de marcas cadastrados no sistema."
