@@ -21,6 +21,7 @@ public class BrandRepository : BaseRepository<Brand>, IBrandRepository
             {
                 brand.Id,
                 brand.Name,
+                brand.BrandImage,
                 brand.IsActive,
                 brand.CreatedAt,
                 brand.IsDeleted,
@@ -30,6 +31,7 @@ public class BrandRepository : BaseRepository<Brand>, IBrandRepository
             {
                 Id = g.Key.Id,
                 Name = g.Key.Name,
+                BrandImage = g.Key.BrandImage,
                 Quantity = g.Count(car =>
                     car != null && car.Available && car.IsActive && !car.IsDeleted
                 ),
