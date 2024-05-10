@@ -11,11 +11,17 @@ namespace Rent.Domain.Services;
 public class BrandService : IBrandService
 {
     private readonly IBrandRepository _brandRepository;
+    private readonly ICarRepository _carRepository;
     private readonly IMapper _mapper;
 
-    public BrandService(IBrandRepository brandRepository, IMapper mapper)
+    public BrandService(
+        IBrandRepository brandRepository,
+        ICarRepository carRepository,
+        IMapper mapper
+    )
     {
         _brandRepository = brandRepository;
+        _carRepository = carRepository;
         _mapper = mapper;
     }
 

@@ -21,7 +21,7 @@ namespace Rent.API.Controllers
             _brandService = brandService;
         }
 
-        [Authorize(Roles = "Owner, Employee, Customer")]
+        // [Authorize(Roles = "Owner, Employee, Customer")]
         [HttpGet]
         [SwaggerOperation(
             Summary = "Retorna todos as marcas cadastrados no sistema.",
