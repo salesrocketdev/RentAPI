@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rent.Core.Models;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Infrastructure.Data;
@@ -11,29 +10,44 @@ public class BrandRepository : BaseRepository<Brand>, IBrandRepository
     public BrandRepository(DataContext context)
         : base(context) { }
 
-    public async Task<(List<Brand>, PaginationMeta)> GetAllBrands(int pageNumber, int pageSize)
+    public async Task<List<Brand>> GetAllBrands()
     {
-        var query = _context.Brands.Where(x => x.IsActive == true && x.IsDeleted == false);
+        var brands = await (
+            from brand in _context.Brands
+            where brand.IsActive && !brand.IsDeleted
+            join car in _context.Cars on brand.Id equals car.BrandId into carGroup
+            from car in carGroup.DefaultIfEmpty()
+            group car by new
+            {
+                brand.Id,
+                brand.Name,
+                brand.IsActive,
+                brand.CreatedAt,
+                brand.IsDeleted,
+                brand.UpdatedAt
+            } into g
+            select new Brand
+            {
+                Id = g.Key.Id,
+                Name = g.Key.Name,
+                Quantity = g.Count(car =>
+                    car != null && car.Available && car.IsActive && !car.IsDeleted
+                ),
+                IsActive = g.Key.IsActive,
+                CreatedAt = g.Key.CreatedAt,
+                IsDeleted = g.Key.IsDeleted,
+                UpdatedAt = g.Key.UpdatedAt
+            }
+        ).ToListAsync();
 
-        int totalItems = await query.CountAsync();
-        int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-
-        var brands = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-
-        var pagination = new PaginationMeta
-        {
-            TotalItems = totalItems,
-            TotalPages = totalPages,
-            CurrentPage = pageNumber,
-            PageSize = pageSize
-        };
-
-        return (brands, pagination);
+        return brands;
     }
 
     public async Task<Brand> GetBrandById(int id)
     {
-        Brand? brand = await _context.Brands.Where(x => x.Id == id).FirstOrDefaultAsync();
+        Brand? brand = await _context
+            .Brands.Where(x => x.Id == id && x.IsActive == true && x.IsDeleted == false)
+            .FirstOrDefaultAsync();
 
         return brand ?? throw new Exception("Brand not found");
     }

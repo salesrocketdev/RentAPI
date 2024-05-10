@@ -1,13 +1,11 @@
-﻿using System.Web.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rent.Core.Models;
 using Rent.Core.Response.Result;
-using Rent.Domain;
+using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
-using HttpGetAttribute = Microsoft.AspNetCore.Mvc.HttpGetAttribute;
-using HttpPostAttribute = Microsoft.AspNetCore.Mvc.HttpPostAttribute;
 
 namespace Rent.API.Controllers
 {
@@ -23,29 +21,24 @@ namespace Rent.API.Controllers
             _brandService = brandService;
         }
 
-        [Authorize(Roles = "Owner, Employee, Customer")]
-        [System.Web.Http.HttpGet]
+        // [Authorize(Roles = "Owner, Employee, Customer")]
+        [HttpGet]
         [SwaggerOperation(
             Summary = "Retorna todos as marcas cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de marcas cadastrados no sistema."
         )]
-        public async Task<ActionResult<ResponsePaginateDTO<ResponseBrandDTO>>> GetAllBrands(
-            int pageNumber = 1,
-            int pageSize = 10
-        )
+        public async Task<ActionResult<List<ResponseBrandDTO>>> GetAllBrands()
         {
             try
             {
-                ResponsePaginateDTO<ResponseBrandDTO> responsePaginateDTO =
-                    await _brandService.GetAllBrands(pageNumber, pageSize);
+                List<ResponseBrandDTO> responseDTO = await _brandService.GetAllBrands();
 
                 ApiResponse<List<ResponseBrandDTO>> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = responsePaginateDTO.Data,
-                        Pagination = responsePaginateDTO.PaginationMeta
+                        Data = responseDTO,
                     };
 
                 return Ok(response);
