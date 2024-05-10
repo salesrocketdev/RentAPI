@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Rent.Core.Models;
 using Rent.Domain.DTO.Request.Create;
 using Rent.Domain.DTO.Response;
 using Rent.Domain.Entities;
@@ -11,38 +10,19 @@ namespace Rent.Domain.Services;
 public class BrandService : IBrandService
 {
     private readonly IBrandRepository _brandRepository;
-    private readonly ICarRepository _carRepository;
     private readonly IMapper _mapper;
 
-    public BrandService(
-        IBrandRepository brandRepository,
-        ICarRepository carRepository,
-        IMapper mapper
-    )
+    public BrandService(IBrandRepository brandRepository, IMapper mapper)
     {
         _brandRepository = brandRepository;
-        _carRepository = carRepository;
         _mapper = mapper;
     }
 
-    public async Task<ResponsePaginateDTO<ResponseBrandDTO>> GetAllBrands(
-        int pageNumber,
-        int pageSize
-    )
+    public async Task<List<ResponseBrandDTO>> GetAllBrands()
     {
-        (List<Brand>, PaginationMeta) brands = await _brandRepository.GetAllBrands(
-            pageNumber,
-            pageSize
-        );
+        List<Brand> brands = await _brandRepository.GetAllBrands();
 
-        var (Data, PaginationMeta) = brands;
-
-        ResponsePaginateDTO<ResponseBrandDTO> responsePaginateDTO =
-            new()
-            {
-                Data = _mapper.Map<List<ResponseBrandDTO>>(Data),
-                PaginationMeta = PaginationMeta
-            };
+        List<ResponseBrandDTO> responsePaginateDTO = _mapper.Map<List<ResponseBrandDTO>>(brands);
 
         return responsePaginateDTO;
     }

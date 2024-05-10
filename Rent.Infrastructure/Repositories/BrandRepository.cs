@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rent.Core.Models;
 using Rent.Domain.Entities;
 using Rent.Domain.Interfaces.Repositories;
 using Rent.Infrastructure.Data;
@@ -11,31 +10,37 @@ public class BrandRepository : BaseRepository<Brand>, IBrandRepository
     public BrandRepository(DataContext context)
         : base(context) { }
 
-    public async Task<(List<Brand>, PaginationMeta)> GetAllBrands(int pageNumber, int pageSize)
+    public async Task<List<Brand>> GetAllBrands()
     {
-        var brands = await _context
-            .Brands.Where(x => x.IsActive && !x.IsDeleted)
-            .GroupJoin(
-                _context.Cars.Where(x => x.Available && x.IsActive && !x.IsDeleted),
-                brand => brand.Id,
-                car => car.BrandId,
-                (brand, cars) => new { Brand = brand, CarCount = cars.Count() }
-            )
-            .Select(x => new Brand
+        var brands = await (
+            from brand in _context.Brands
+            where brand.IsActive && !brand.IsDeleted
+            join car in _context.Cars on brand.Id equals car.BrandId into carGroup
+            from car in carGroup.DefaultIfEmpty()
+            group car by new
             {
-                Id = x.Brand.Id,
-                Name = x.Brand.Name,
-                Quantity = x.CarCount,
-                IsActive = x.Brand.IsActive,
-                CreatedAt = x.Brand.CreatedAt,
-                IsDeleted = x.Brand.IsDeleted,
-                UpdatedAt = x.Brand.UpdatedAt,
-            })
-            .ToListAsync();
+                brand.Id,
+                brand.Name,
+                brand.IsActive,
+                brand.CreatedAt,
+                brand.IsDeleted,
+                brand.UpdatedAt
+            } into g
+            select new Brand
+            {
+                Id = g.Key.Id,
+                Name = g.Key.Name,
+                Quantity = g.Count(car =>
+                    car != null && car.Available && car.IsActive && !car.IsDeleted
+                ),
+                IsActive = g.Key.IsActive,
+                CreatedAt = g.Key.CreatedAt,
+                IsDeleted = g.Key.IsDeleted,
+                UpdatedAt = g.Key.UpdatedAt
+            }
+        ).ToListAsync();
 
-        var pagination = new PaginationMeta { };
-
-        return (brands, pagination);
+        return brands;
     }
 
     public async Task<Brand> GetBrandById(int id)

@@ -27,23 +27,18 @@ namespace Rent.API.Controllers
             Summary = "Retorna todos as marcas cadastrados no sistema.",
             Description = "Este endpoint retorna uma lista de marcas cadastrados no sistema."
         )]
-        public async Task<ActionResult<ResponsePaginateDTO<ResponseBrandDTO>>> GetAllBrands(
-            int pageNumber = 1,
-            int pageSize = 10
-        )
+        public async Task<ActionResult<List<ResponseBrandDTO>>> GetAllBrands()
         {
             try
             {
-                ResponsePaginateDTO<ResponseBrandDTO> responsePaginateDTO =
-                    await _brandService.GetAllBrands(pageNumber, pageSize);
+                List<ResponseBrandDTO> responseDTO = await _brandService.GetAllBrands();
 
                 ApiResponse<List<ResponseBrandDTO>> response =
                     new()
                     {
                         Code = 1,
                         Message = "Success.",
-                        Data = responsePaginateDTO.Data,
-                        Pagination = responsePaginateDTO.PaginationMeta
+                        Data = responseDTO,
                     };
 
                 return Ok(response);
